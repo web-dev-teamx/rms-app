@@ -60,7 +60,7 @@ class ComplaintTile extends StatelessWidget {
                 ),
                 Text(
                   addeddate,
-                  style: TextStyle(),
+                  style: const TextStyle(),
                 ),
               ],
             ),

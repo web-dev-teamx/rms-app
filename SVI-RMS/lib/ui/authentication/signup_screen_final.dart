@@ -2,9 +2,10 @@
 
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_places/flutter_google_places.dart';
-import 'package:geocoder/geocoder.dart';
+// import 'package:geocoder/geocoder.dart';
 import 'package:google_maps_webservice/places.dart';
 import 'package:sv_rms_mobile/services/register.dart';
 import 'package:sv_rms_mobile/ui/authentication/login_screen.dart';
@@ -20,9 +21,10 @@ class SingupScreenFinal extends StatefulWidget {
 
   const SingupScreenFinal(
       {Key? key,
-      required this.comapnycontroller,
       required this.fisrtnamecontroller,
-      required this.lastnamecontroller});
+      required this.lastnamecontroller,
+      required this.comapnycontroller})
+      : super(key: key);
 
   @override
   _SingupScreenFinalState createState() => _SingupScreenFinalState();
@@ -44,7 +46,9 @@ class _SingupScreenFinalState extends State<SingupScreenFinal> {
   final homeScaffoldKey = GlobalKey<ScaffoldState>();
   final searchScaffoldKey = GlobalKey<ScaffoldState>();
   void _onCountryChange(countryCode) {
-    print("New Country selected: " + countryCode.toString());
+    if (kDebugMode) {
+      print("New Country selected: " + countryCode.toString());
+    }
   }
 
   String get apiKey => 'AIzaSyDxG0RL36UO7jWJ2vXQGHUk8O4qakRafzE';
@@ -328,14 +332,16 @@ class _SingupScreenFinalState extends State<SingupScreenFinal> {
       PlacesDetailsResponse detail =
           await places.getDetailsByPlaceId(p.placeId ?? '');
 
-      var placeId = p.placeId;
+      // var placeId = p.placeId;
       double lat = detail.result.geometry!.location.lat;
       double lng = detail.result.geometry!.location.lng;
 
-      var address = await Geocoder.local.findAddressesFromQuery(p.description);
+      // var address = await Geocoder.local.findAddressesFromQuery(p.description);
 
-      print(lat);
-      print(lng);
+      if (kDebugMode) {
+        print(lat);
+        print(lng);
+      }
     }
   }
 

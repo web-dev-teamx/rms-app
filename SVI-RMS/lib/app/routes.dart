@@ -13,7 +13,6 @@ import 'package:sv_rms_mobile/ui/payment_details/payment_details_screen.dart';
 import 'package:sv_rms_mobile/ui/profile_details/about_me/about_me_screen.dart';
 import 'package:sv_rms_mobile/ui/settings/settings_screen.dart';
 import 'package:sv_rms_mobile/ui/splash_screen/splash_screen.dart';
-import 'package:sv_rms_mobile/ui/technician_details/technician_details_screen.dart';
 import 'package:sv_rms_mobile/ui/technicians/technician_screen.dart';
 import 'package:sv_rms_mobile/ui/technicians/technician_store.dart';
 

@@ -127,7 +127,7 @@ class BidModel {
       v.forEach((v) {
         arr0.add(BidModelData.fromJson(v));
       });
-      this.data = arr0;
+      data = arr0;
     }
   }
   Map<String, dynamic> toJson() {
@@ -137,9 +137,9 @@ class BidModel {
     if (this.data != null) {
       final v = this.data;
       final arr0 = [];
-      v!.forEach((v) {
+      for (var v in v!) {
         arr0.add(v!.toJson());
-      });
+      }
       data['data'] = arr0;
     }
     return data;

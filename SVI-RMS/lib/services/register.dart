@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 import '../model/register/register.dart';
@@ -20,7 +21,9 @@ Future<Signup> registerRequest(
   );
 
   if (response.statusCode == 200 || response.statusCode <= 205) {
-    print(response.body);
+    if (kDebugMode) {
+      print(response.body);
+    }
     return Signup.fromJson(json.decode(response.body));
   }
   throw json.decode(response.body)["message"];

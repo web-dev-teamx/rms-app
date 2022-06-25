@@ -62,7 +62,7 @@ class _BidDetailsScreenState extends State<BidDetailsScreen> {
                                   ),
                                   Text(
                                     "Bid Date: ${snapshot.data?.data?.projectStartDatetime ?? ''}",
-                                    style: TextStyle(),
+                                    style: const TextStyle(),
                                   ),
                                 ],
                               ),

@@ -1,13 +1,13 @@
 import 'package:cupertino_rounded_corners/cupertino_rounded_corners.dart';
 import 'package:flutter/material.dart';
-import 'package:sv_rms_mobile/model/get_projects/get_CompletedProjects_model.dart';
-import 'package:sv_rms_mobile/ui/project_details/completed_project_detail_screen.dart';
+import 'package:sv_rms_mobile/model/get_projects/get_active_projects_model.dart';
+import 'package:sv_rms_mobile/ui/project_details/active_project_details_screen.dart';
 
-class CompletedProjectTile extends StatelessWidget {
-  const CompletedProjectTile(
-      {Key? key, required this.getCompletedProjectModel, required this.index})
+class ActiveProjectTile extends StatelessWidget {
+  const ActiveProjectTile(
+      {Key? key, required this.getActiveProjectModel, required this.index})
       : super(key: key);
-  final GetCompletedProjectModel getCompletedProjectModel;
+  final GetActiveProjectModel getActiveProjectModel;
   final int index;
   @override
   Widget build(BuildContext context) {
@@ -24,8 +24,8 @@ class CompletedProjectTile extends StatelessWidget {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => CompletedProjectDetailsScreen(
-                    project: getCompletedProjectModel, active_index: index),
+                builder: (context) => ActiveProjectDetailsScreen(
+                    project: getActiveProjectModel, activeIndex: index),
               ),
             );
             // Navigator.push(context, ProjectDetailsScreen.route);
@@ -43,7 +43,7 @@ class CompletedProjectTile extends StatelessWidget {
                     SizedBox(
                       width: MediaQuery.of(context).size.width * 0.55,
                       child: Text(
-                        getCompletedProjectModel.data![index].projectName ??
+                        getActiveProjectModel.data![index].projectName ??
                             "No Name",
                         style: const TextStyle(
                           fontSize: 16,
@@ -78,7 +78,7 @@ class CompletedProjectTile extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Text(
-                      getCompletedProjectModel.data![index].startDateTime ??
+                      getActiveProjectModel.data![index].startDateTime ??
                           "No Time",
                       // ": 2021-09-14T09:00",
                       style: const TextStyle(
@@ -88,7 +88,7 @@ class CompletedProjectTile extends StatelessWidget {
                     ),
                     const VerticalDivider(),
                     Text(
-                      getCompletedProjectModel.data![index].endDateTime ??
+                      getActiveProjectModel.data![index].endDateTime ??
                           "No End Data Available",
                       // "Ends: 2021-09-14T17:00",
                       style: const TextStyle(
@@ -106,14 +106,12 @@ class CompletedProjectTile extends StatelessWidget {
                       color: Colors.blueGrey,
                     ),
                     const SizedBox(width: 4),
-                    Flexible(
-                      child: Text(
-                        getCompletedProjectModel.data![index].projectLocation ??
-                            "No Location",
-                        // "Location: Épagny-Metz-Tessy, France",
-                        style: const TextStyle(
-                          color: Colors.grey,
-                        ),
+                    Text(
+                      getActiveProjectModel.data![index].projectLocation ??
+                          "No Location",
+                      // "Location: Épagny-Metz-Tessy, France",
+                      style: const TextStyle(
+                        color: Colors.grey,
                       ),
                     ),
                   ],
@@ -127,7 +125,7 @@ class CompletedProjectTile extends StatelessWidget {
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      getCompletedProjectModel.data![index].startDateTime ??
+                      getActiveProjectModel.data![index].startDateTime ??
                           "No Date Available",
                       // "Duation: Minimum two hours",
                       style: const TextStyle(

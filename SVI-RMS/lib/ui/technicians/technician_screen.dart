@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:provider/provider.dart';
 import 'package:sv_rms_mobile/blocs/services_bloc.dart';
 import 'package:sv_rms_mobile/model/get_technicians/get_technicians_model.dart';
 import 'package:sv_rms_mobile/ui/add_technician/add_technician_screen.dart';
 import 'package:sv_rms_mobile/ui/technicians/technician_store.dart';
 import 'package:sv_rms_mobile/ui/technicians/widgets/technician_tile.dart';
-import 'package:sv_rms_mobile/utils/app_theme.dart';
 import 'package:sv_rms_mobile/widgets/custom_fab.dart';
 
 class TechniciansScreen extends StatefulWidget {

@@ -1,6 +1,6 @@
 import 'package:cupertino_rounded_corners/cupertino_rounded_corners.dart';
 import 'package:flutter/material.dart';
-import 'package:sv_rms_mobile/model/get_projects/get_IntrestedProject_model.dart';
+import 'package:sv_rms_mobile/model/get_projects/get_intrested_project_model.dart';
 import 'package:sv_rms_mobile/ui/project_details/intrested_project_details.dart';
 
 class IntrestedProjectTile extends StatelessWidget {
@@ -25,7 +25,7 @@ class IntrestedProjectTile extends StatelessWidget {
               context,
               MaterialPageRoute(
                 builder: (context) => IntrestedProjectDetailsScreen(
-                    project: intrestedProjectModel, active_index: index),
+                    project: intrestedProjectModel, activeIndex: index),
               ),
             );
             // Navigator.push(context, ProjectDetailsScreen.route);

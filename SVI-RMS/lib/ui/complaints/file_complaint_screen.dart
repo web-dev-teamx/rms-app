@@ -2,13 +2,11 @@
 
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:mime/mime.dart';
 
 import 'dart:io';
-
-import 'package:sv_rms_mobile/model/get_complaints/file_complaint_model.dart';
 
 class FileComplaintScreen extends StatefulWidget {
   const FileComplaintScreen({Key? key}) : super(key: key);
@@ -20,7 +18,7 @@ class FileComplaintScreen extends StatefulWidget {
 class _FileComplaintScreenState extends State<FileComplaintScreen> {
   Dio dio = Dio();
   File? _image;
-  final ImagePicker _picker = ImagePicker();
+  final ImagePicker picker = ImagePicker();
   TextEditingController tilecontroller = TextEditingController();
   TextEditingController descriptioncontroller = TextEditingController();
 
@@ -153,11 +151,12 @@ class _FileComplaintScreenState extends State<FileComplaintScreen> {
       _image = File(_pickedFile!.path);
     });
 
-    print(_image);
+    if (kDebugMode) {
+      print(_image);
+    }
   }
 
   void _upload(File file) async {
-    String fileName = file.path.split('/').last;
 
     FormData data = FormData.fromMap({
       "id": "2128",
@@ -174,7 +173,9 @@ class _FileComplaintScreenState extends State<FileComplaintScreen> {
           .post("https://rmsportal.net/api/process_add_issue.php", data: data);
       if (response.statusCode == 200) {}
     } catch (e) {
-      print(e);
+      if (kDebugMode) {
+        print(e);
+      }
     }
 
     // print(data);

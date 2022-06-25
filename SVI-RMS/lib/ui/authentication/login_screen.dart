@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:sv_rms_mobile/services/login.dart';
 import 'package:sv_rms_mobile/ui/home/home_screen.dart';
@@ -120,7 +121,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             HomeScreen.route,
                           );
                         }).catchError((err) {
-                          print(err);
+                          if (kDebugMode) {
+                            print(err);
+                          }
                         });
                       },
                     ),

@@ -30,7 +30,6 @@ class _BidsScreenState extends State<BidsScreen>
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     controller = TabController(length: 3, vsync: this);
 

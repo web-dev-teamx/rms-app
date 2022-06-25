@@ -4,17 +4,17 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sv_rms_mobile/blocs/services_bloc.dart';
 import 'package:sv_rms_mobile/model/get_project_detail/get_project_details.dart';
-import 'package:sv_rms_mobile/model/get_projects/get_IntrestedProject_model.dart';
+import 'package:sv_rms_mobile/model/get_projects/get_intrested_project_model.dart';
 
 class IntrestedProjectDetailsScreen extends StatefulWidget {
   const IntrestedProjectDetailsScreen({
     Key? key,
     required this.project,
-    required this.active_index,
+    required this.activeIndex,
   }) : super(key: key);
 
   final IntrestedProjectModel project;
-  final int active_index;
+  final int activeIndex;
   @override
   _IntrestedProjectDetailsScreenState createState() =>
       _IntrestedProjectDetailsScreenState();
@@ -29,8 +29,8 @@ class _IntrestedProjectDetailsScreenState
           future: value.getProjectDetails(
               id: '195',
               projectid:
-                  widget.project.data?[widget.active_index].projectId ?? '',
-              aspid: widget.project.data?[widget.active_index].asPId ?? ''),
+                  widget.project.data?[widget.activeIndex].projectId ?? '',
+              aspid: widget.project.data?[widget.activeIndex].asPId ?? ''),
           builder: (context, snapShot) {
             if (snapShot.hasData) {
               return Scaffold(

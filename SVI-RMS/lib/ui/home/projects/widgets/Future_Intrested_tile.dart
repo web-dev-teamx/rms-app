@@ -1,7 +1,6 @@
 import 'package:cupertino_rounded_corners/cupertino_rounded_corners.dart';
 import 'package:flutter/material.dart';
 import 'package:sv_rms_mobile/model/get_projects/future_intrested_model.dart';
-import 'package:sv_rms_mobile/ui/project_details/intrested_project_details.dart';
 
 class FutureIntrestedTile extends StatelessWidget {
   const FutureIntrestedTile(

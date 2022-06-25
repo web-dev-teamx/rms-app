@@ -1,10 +1,7 @@
-import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:sv_rms_mobile/services/register.dart';
 import 'package:sv_rms_mobile/ui/authentication/signup_screen_final.dart';
-import 'package:sv_rms_mobile/ui/home/home_screen.dart';
-import 'login_screen.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({Key? key}) : super(key: key);
@@ -111,7 +108,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   borderRadius: const BorderRadius.all(Radius.circular(16.0)),
                   child: Padding(
                     padding: const EdgeInsets.all(12),
-                    child: Container(
+                    child: SizedBox(
                       width: MediaQuery.of(context).size.width,
                       child: DropdownButton<String>(
                         underline: Container(),
@@ -121,7 +118,9 @@ class _SignupScreenState extends State<SignupScreen> {
                         icon: const Icon(Icons.arrow_downward),
                         iconSize: 24,
                         onChanged: (String? newValue) {
-                          print(newValue);
+                          if (kDebugMode) {
+                            print(newValue);
+                          }
                           setState(() {
                             dropdownValue = newValue!;
                             index = newValue;

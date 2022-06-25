@@ -30,6 +30,8 @@ class _TechnicianDetailsScreenState extends State<TechnicianDetailsScreen> {
     email.text = widget.getTechnician?.data?[widget.index].emailAddress ?? '';
     citycountry.text =
         "${widget.getTechnician?.data?[widget.index].city}, ${widget.getTechnician?.data?[widget.index].country}";
+
+    super.initState();
   }
 
   @override
@@ -165,64 +167,64 @@ class _TechnicianDetailsScreenState extends State<TechnicianDetailsScreen> {
                       ),
                     ),
                   ),
-                  SizedBox(height: 16),
-                  TextField(
+                  const SizedBox(height: 16),
+                  const TextField(
                     decoration: InputDecoration(
                       label: Text("Contact Number(Primary)"),
                       border: OutlineInputBorder(),
                     ),
                   ),
-                  SizedBox(height: 16),
-                  TextField(
+                  const SizedBox(height: 16),
+                  const TextField(
                     decoration: InputDecoration(
                       label: Text("Contact Number(Seconday)"),
                       border: OutlineInputBorder(),
                     ),
                   ),
-                  SizedBox(height: 16),
-                  TextField(
+                  const SizedBox(height: 16),
+                  const TextField(
                     decoration: InputDecoration(
                       label: Text("Phone Number (Landline)"),
                       border: OutlineInputBorder(),
                     ),
                   ),
-                  SizedBox(height: 16),
-                  TextField(
+                  const SizedBox(height: 16),
+                  const TextField(
                     decoration: InputDecoration(
                       label: Text("Whatsapp Contact Number"),
                       border: OutlineInputBorder(),
                     ),
                   ),
-                  SizedBox(height: 16),
-                  TextField(
+                  const SizedBox(height: 16),
+                  const TextField(
                     decoration: InputDecoration(
                       label: Text("Skype ID"),
                       border: OutlineInputBorder(),
                     ),
                   ),
-                  SizedBox(height: 16),
-                  TextField(
+                  const SizedBox(height: 16),
+                  const TextField(
                     decoration: InputDecoration(
                       label: Text("Working Experience"),
                       border: OutlineInputBorder(),
                     ),
                   ),
-                  SizedBox(height: 16),
-                  TextField(
+                  const SizedBox(height: 16),
+                  const TextField(
                     decoration: InputDecoration(
                       label: Text("Languages"),
                       border: OutlineInputBorder(),
                     ),
                   ),
-                  SizedBox(height: 16),
-                  TextField(
+                  const SizedBox(height: 16),
+                  const TextField(
                     decoration: InputDecoration(
                       label: Text("Current Based Country & Location"),
                       border: OutlineInputBorder(),
                     ),
                   ),
-                  SizedBox(height: 16),
-                  TextField(
+                  const SizedBox(height: 16),
+                  const TextField(
                     decoration: InputDecoration(
                       label: Text("Interested In"),
                       border: OutlineInputBorder(),
