@@ -4,7 +4,7 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:sv_rms_mobile/services/client/http_client_provider.dart';
-import 'package:sv_rms_mobile/ui/authentication/login_screen.dart';
+import 'package:sv_rms_mobile/ui/authentication/profile_setup/multi_step_form.dart';
 import 'package:sv_rms_mobile/utils/app_theme.dart';
 
 import 'config_store.dart';
@@ -44,7 +44,7 @@ class _RmsAppState extends State<RmsApp> {
           navigatorKey: navigatorKey,
           builder: BotToastInit(),
           navigatorObservers: [BotToastNavigatorObserver()],
-          initialRoute: LoginScreen.route,
+          initialRoute: MultiStepForm.route,
           onGenerateRoute: generateRoute,
           // initialRoute: SplashScreen.route,
           // localizationsDelegates: const [
@@ -52,7 +52,7 @@ class _RmsAppState extends State<RmsApp> {
           //   GlobalMaterialLocalizations.delegate,
           //   GlobalWidgetsLocalizations.delegate,
           //   GlobalCupertinoLocalizations.delegate,
-          // ], 
+          // ],
           // supportedLocales: AppLocalizations.supportedLocales,
           // locale: _resolveLocale(widget.configStore.locale),
           themeMode: _getThemeMode(widget.configStore.isDarkMode),
@@ -75,7 +75,7 @@ class _RmsAppState extends State<RmsApp> {
             brightness: Brightness.dark,
           ),
           theme: ThemeData(
-            appBarTheme:  AppBarTheme(
+            appBarTheme: AppBarTheme(
               backgroundColor: AppTheme.primaryColor,
               foregroundColor: Colors.white,
               elevation: 1,
@@ -89,7 +89,7 @@ class _RmsAppState extends State<RmsApp> {
             splashColor: AppTheme.primaryColor.withOpacity(0.1),
             backgroundColor: Colors.white,
             highlightColor: Colors.transparent,
-            scaffoldBackgroundColor:  Colors.blueGrey.shade50,
+            scaffoldBackgroundColor: Colors.blueGrey.shade50,
             fontFamily: GoogleFonts.poppins().fontFamily,
           ),
         ),

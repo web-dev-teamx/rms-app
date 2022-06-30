@@ -43,8 +43,8 @@ class _SingupScreenFinalState extends State<SingupScreenFinal> {
   String? stateValue;
   String? cityValue;
 
-  final homeScaffoldKey = GlobalKey<ScaffoldState>();
-  final searchScaffoldKey = GlobalKey<ScaffoldState>();
+  final homeScaffoldKey = GlobalKey<ScaffoldMessengerState>();
+  final searchScaffoldKey = GlobalKey<ScaffoldMessengerState>();
   void _onCountryChange(countryCode) {
     if (kDebugMode) {
       print("New Country selected: " + countryCode.toString());
@@ -275,7 +275,6 @@ class _SingupScreenFinalState extends State<SingupScreenFinal> {
                 ),
               ),
             ),
-
             const SizedBox(
               height: 20,
             ),
@@ -312,22 +311,34 @@ class _SingupScreenFinalState extends State<SingupScreenFinal> {
     );
   }
 
+  void onError(PlacesAutocompleteResponse response) {
+    homeScaffoldKey.currentState!.showSnackBar(
+      SnackBar(content: Text(response.errorMessage.toString())),
+    );
+  }
+
   Future<void> _handlePressButton() async {
-    Prediction? p = (await PlacesAutocomplete.show(
+    Prediction? p = await PlacesAutocomplete.show(
       context: context,
       apiKey: apiKey,
+      onError: onError,
+      mode: Mode.overlay,
       language: "fr",
-      decoration: const InputDecoration(
+      decoration: InputDecoration(
         hintText: 'Search',
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(20),
+          borderSide: const BorderSide(
+            color: Colors.white,
+          ),
+        ),
       ),
-      components: [Component(Component.country, "fr")],
-    ));
-
+    );
     displayPrediction(p, homeScaffoldKey.currentState);
   }
 
   Future<void> displayPrediction(
-      Prediction? p, ScaffoldState? currentState) async {
+      Prediction? p, ScaffoldMessengerState? currentState) async {
     if (p != null) {
       PlacesDetailsResponse detail =
           await places.getDetailsByPlaceId(p.placeId ?? '');

@@ -57,13 +57,13 @@ dependencies:
   google_maps_webservice: ^0.0.20-nullsafety.5
   google_api_headers:
   flutter_google_places:
-
   permission_handler:
   geolocator: ^8.0.1
   uuid:
   intl: ^0.17.0
   mime:
   image_picker: ^0.8.4+10
+  cool_stepper: ^1.2.1
   
   
 

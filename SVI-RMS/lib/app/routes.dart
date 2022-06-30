@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sv_rms_mobile/ui/add_technician/add_technician_screen.dart';
 import 'package:sv_rms_mobile/ui/authentication/login_screen.dart';
+import 'package:sv_rms_mobile/ui/authentication/profile_setup/multi_step_form.dart';
 import 'package:sv_rms_mobile/ui/authentication/signup_screen.dart';
 import 'package:sv_rms_mobile/ui/complaints/complaints_screen.dart';
 import 'package:sv_rms_mobile/ui/complaints/file_complaint_screen.dart';
@@ -35,6 +36,10 @@ Route<dynamic>? generateRoute(RouteSettings settings) {
         builder: (context) => HomeScreen(
           homeScreenStore: HomeScreenStore(),
         ),
+      );
+    case MultiStepForm.route:
+      return MaterialPageRoute(
+        builder: (context) => const MultiStepForm(),
       );
     // case ProjectDetailsScreen.route:
     //   return MaterialPageRoute(
