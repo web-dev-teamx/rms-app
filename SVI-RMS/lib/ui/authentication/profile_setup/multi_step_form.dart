@@ -1,6 +1,7 @@
 import 'package:cool_stepper/cool_stepper.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:sv_rms_mobile/ui/authentication/profile_setup/step_1.dart';
 
 class MultiStepForm extends StatefulWidget {
   const MultiStepForm({Key? key}) : super(key: key);
@@ -20,7 +21,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
   @override
   Widget build(BuildContext context) {
     final steps = [
-      CoolStep(
+     CoolStep(
         title: 'Basic Information',
         subtitle: 'Please fill some of the basic information to get started',
         content: Form(

@@ -52,7 +52,7 @@ dependencies:
   platform: ^3.1.0
   country_code_picker: ^2.0.2
   location:
-  geocoder:
+  geocoder2:
   google_maps_flutter:
   google_maps_webservice: ^0.0.20-nullsafety.5
   google_api_headers:
