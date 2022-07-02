@@ -64,6 +64,7 @@ dependencies:
   mime:
   image_picker: ^0.8.4+10
   cool_stepper: ^1.2.1
+  fluttericon: ^2.0.0
   
   
 
