@@ -896,8 +896,12 @@ class _MultiStepFormState extends State<MultiStepForm> {
       friendsTextFields.add(Material(
         child: Row(
           children: [
-            Expanded(
+            Flexible(
+              flex: 2,
               child: LanguagesFields(index: i),
+            ),
+            Flexible(
+              child: LevelFields(index: i),
             ),
             const SizedBox(
               width: 16,
@@ -951,21 +955,22 @@ class LanguagesFields extends StatefulWidget {
 }
 
 class _LanguagesFieldsState extends State<LanguagesFields> {
-  String? nameController;
+  String? languageController;
 
   @override
   void initState() {
     super.initState();
-    nameController = '';
+    languageController = '';
   }
 
   @override
   Widget build(BuildContext context) {
     WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
-      nameController = _MultiStepFormState.languageList[widget.index];
+      languageController = _MultiStepFormState.languageList[widget.index];
     });
 
     return DropdownButtonFormField(
+      iconSize: 0.0,
       items: const [
         DropdownMenuItem(
           child: Text('English'),
@@ -1020,7 +1025,91 @@ class _LanguagesFieldsState extends State<LanguagesFields> {
       ),
       validator: (String? v) {
         if (v!.isEmpty) {
-          return 'Please enter something';
+          return 'please select language';
+        }
+        return null;
+      },
+    );
+  }
+}
+
+class LevelFields extends StatefulWidget {
+  final int index;
+
+  const LevelFields({Key? key, required this.index}) : super(key: key);
+  @override
+  _LevelFieldsState createState() => _LevelFieldsState();
+}
+
+class _LevelFieldsState extends State<LevelFields> {
+  String? levelController;
+
+  @override
+  void initState() {
+    super.initState();
+    levelController = '';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
+      levelController = _MultiStepFormState.languageList[widget.index];
+    });
+
+    return DropdownButtonFormField(
+      iconSize: 0.0,
+      items: const [
+        DropdownMenuItem(
+          child: Text('Level 1'),
+          value: 'Level 1',
+        ),
+        DropdownMenuItem(
+          child: Text('Level 2'),
+          value: 'Level 2',
+        ),
+        DropdownMenuItem(
+          child: Text('Level 3'),
+          value: 'Level 3',
+        ),
+        DropdownMenuItem(
+          child: Text('Level 4'),
+          value: 'Level 4',
+        ),
+        DropdownMenuItem(
+          child: Text('Level 5'),
+          value: 'Level 5',
+        ),
+      ],
+      onChanged: (v) =>
+          _MultiStepFormState.languageList[widget.index] = v.toString(),
+      decoration: InputDecoration(
+        border: InputBorder.none,
+        label: RichText(
+          text: TextSpan(
+            children: [
+              TextSpan(
+                text: 'Level',
+                style: TextStyle(
+                  color: Colors.grey.shade700,
+                  fontSize: 16,
+                ),
+              ),
+              const TextSpan(
+                text: ' *',
+                style: TextStyle(
+                  color: Colors.red,
+                  fontFeatures: [
+                    FontFeature.enable('sups'),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+      validator: (String? v) {
+        if (v!.isEmpty) {
+          return 'please select level';
         }
         return null;
       },
