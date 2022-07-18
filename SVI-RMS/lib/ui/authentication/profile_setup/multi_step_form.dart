@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:cool_stepper/cool_stepper.dart';
@@ -6,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:fluttericon/entypo_icons.dart';
 import 'package:fluttericon/font_awesome5_icons.dart';
 import 'package:fluttericon/mfg_labs_icons.dart';
+import 'package:sv_rms_mobile/utils/app_theme.dart';
+import 'package:text_chip_field/text_chip_field.dart';
 
 class MultiStepForm extends StatefulWidget {
   const MultiStepForm({Key? key}) : super(key: key);
@@ -19,6 +22,8 @@ class _MultiStepFormState extends State<MultiStepForm> {
   final _formKey = GlobalKey<FormState>();
   CountryCode? countryCode;
   static List<String> languageList = [''];
+  static List<String> levelList = [''];
+  static List<String> uploadList = [''];
 
   TextEditingController? _nameController;
 
@@ -38,9 +43,9 @@ class _MultiStepFormState extends State<MultiStepForm> {
   Widget build(BuildContext context) {
     final steps = [
       CoolStep(
-        isHeaderEnabled: false,
-        title: '',
-        subtitle: '',
+        title: 'Personal Information',
+        subtitle:
+            'Your profile is not submited yet, please fill all the required filed in this form in order to submit',
         content: Form(
           key: _formKey,
           child: Column(
@@ -862,11 +867,266 @@ class _MultiStepFormState extends State<MultiStepForm> {
         },
       ),
       CoolStep(
-        isHeaderEnabled: false,
-        title: '',
-        subtitle: '',
-        content: Row(
-          children: const <Widget>[],
+        title: 'Professional Information',
+        subtitle:
+            'Your professional infromation is not submited yet, please fill all the required filed in this form in order to submit',
+        content: Column(
+          children: <Widget>[
+            SizedBox(
+              width: MediaQuery.of(context).size.width,
+              child: Material(
+                borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(16.0),
+                    topRight: Radius.circular(16.0)),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 16.0, vertical: 8.0),
+                  child: Text(
+                    'Mobility If Yes',
+                    style: TextStyle(
+                      color: Colors.grey.shade700,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(
+              child: Material(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: TextChipField(
+                    seprator: ",",
+                    spacing: 5,
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      label: Text(
+                        'Mention Region / Location',
+                        style: TextStyle(
+                          color: Colors.grey.shade700,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                    onChanged: (val) {},
+                  ),
+                ),
+              ),
+            ),
+            const Divider(
+              height: 2,
+            ),
+            SizedBox(
+              child: Material(
+                borderRadius: const BorderRadius.only(
+                  bottomLeft: Radius.circular(16.0),
+                  bottomRight: Radius.circular(16.0),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 16.0, vertical: 8.0),
+                  child: DropdownButtonFormField(
+                    iconSize: 0.0,
+                    items: const [
+                      DropdownMenuItem(
+                        child: Text('Freelancer'),
+                        value: 'Freelancer',
+                      ),
+                      DropdownMenuItem(
+                        child: Text('Un-Employed'),
+                        value: 'Un-Employed',
+                      ),
+                      DropdownMenuItem(
+                        child: Text('Available Full Time'),
+                        value: 'Available Full Time',
+                      ),
+                      DropdownMenuItem(
+                        child: Text('Employed But Available Part Time'),
+                        value: 'Employed But Available Part Time',
+                      ),
+                    ],
+                    onChanged: (v) {},
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      label: RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                              text: 'Employment Status',
+                              style: TextStyle(
+                                color: Colors.grey.shade700,
+                                fontSize: 16,
+                              ),
+                            ),
+                            const TextSpan(
+                              text: ' *',
+                              style: TextStyle(
+                                color: Colors.red,
+                                fontFeatures: [
+                                  FontFeature.enable('sups'),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    validator: (String? v) {
+                      if (v!.isEmpty) {
+                        return 'please select employment status';
+                      }
+                      return null;
+                    },
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+          ],
+        ),
+        validation: () {
+          return null;
+        },
+      ),
+      CoolStep(
+        title: 'Other Information',
+        subtitle:
+            'Your other essential infromation is not submited yet, please fill all the required filed in this form in order to submit',
+        content: Column(
+          children: <Widget>[
+            SizedBox(
+              width: MediaQuery.of(context).size.width,
+              child: Material(
+                borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(16.0),
+                    topRight: Radius.circular(16.0)),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 16.0, vertical: 8.0),
+                  child: RichText(
+                    text: TextSpan(
+                      children: [
+                        TextSpan(
+                          text: 'Tools',
+                          style: TextStyle(
+                            color: Colors.grey.shade700,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const TextSpan(
+                          text: ' *',
+                          style: TextStyle(
+                            color: Colors.red,
+                            fontFeatures: [
+                              FontFeature.enable('sups'),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Material(
+              borderRadius: const BorderRadius.only(
+                bottomLeft: Radius.circular(16.0),
+                bottomRight: Radius.circular(16.0),
+              ),
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                child: DropdownButtonFormField(
+                  iconSize: 0.0,
+                  items: const [
+                    DropdownMenuItem(
+                      child: Text('End User Computing'),
+                      value: 'End User Computing',
+                    ),
+                    DropdownMenuItem(
+                      child: Text('Networking'),
+                      value: 'Networking',
+                    ),
+                    DropdownMenuItem(
+                      child: Text('DDN Toolkit'),
+                      value: 'DDN Toolkit',
+                    ),
+                  ],
+                  onChanged: (v) {},
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    label: Text(
+                      'Select Toolkit',
+                      style: TextStyle(
+                        color: Colors.grey.shade700,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                  validator: (String? v) {
+                    if (v!.isEmpty) {
+                      return 'please select atleast one toolkit';
+                    }
+                    return null;
+                  },
+                ),
+              ),
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            SizedBox(
+              width: MediaQuery.of(context).size.width,
+              child: Material(
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(16.0),
+                  topRight: Radius.circular(16.0),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 16.0, vertical: 8.0),
+                  child: RichText(
+                    text: TextSpan(
+                      children: [
+                        TextSpan(
+                          text: 'Attachments',
+                          style: TextStyle(
+                            color: Colors.grey.shade700,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const TextSpan(
+                          text: ' *',
+                          style: TextStyle(
+                            color: Colors.red,
+                            fontFeatures: [
+                              FontFeature.enable('sups'),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            ...getUploadButton(),
+            SizedBox(
+              width: MediaQuery.of(context).size.width,
+              height: 16,
+              child: const Material(
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(16.0),
+                  bottomRight: Radius.circular(16.0),
+                ),
+              ),
+            ),
+          ],
         ),
         validation: () {
           return null;
@@ -875,11 +1135,21 @@ class _MultiStepFormState extends State<MultiStepForm> {
     ];
 
     final stepper = CoolStepper(
-      showErrorSnackbar: false,
+      showErrorSnackbar: true,
       onCompleted: () {},
       steps: steps,
-      config: const CoolStepperConfig(
+      config: CoolStepperConfig(
         backText: 'Back',
+        headerColor: AppTheme.primaryColor,
+        titleTextStyle: const TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+          fontSize: 20,
+        ),
+        subtitleTextStyle: TextStyle(
+          color: Colors.white.withOpacity(0.75),
+          fontSize: 14,
+        ),
       ),
     );
 
@@ -906,7 +1176,6 @@ class _MultiStepFormState extends State<MultiStepForm> {
             const SizedBox(
               width: 16,
             ),
-            // we need add button at last friends row
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: _addRemoveButton(i == languageList.length - 1, i),
@@ -918,12 +1187,10 @@ class _MultiStepFormState extends State<MultiStepForm> {
     return friendsTextFields;
   }
 
-  /// add / remove button
   Widget _addRemoveButton(bool add, int index) {
     return InkWell(
       onTap: () {
         if (add) {
-          // add new text-fields at the top of all friends textfields
           languageList.insert(0, '');
         } else {
           languageList.removeAt(index);
@@ -934,7 +1201,58 @@ class _MultiStepFormState extends State<MultiStepForm> {
         width: 30,
         height: 30,
         decoration: BoxDecoration(
-          color: (add) ? Colors.green : Colors.red,
+          color: (add) ? AppTheme.primaryColor : Colors.red,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Icon(
+          (add) ? Icons.add : Icons.remove,
+          color: Colors.white,
+        ),
+      ),
+    );
+  }
+
+  List<Widget> getUploadButton() {
+    List<Widget> friendsTextFields = [];
+    for (int i = 0; i < uploadList.length; i++) {
+      friendsTextFields.add(
+        Material(
+          child: Padding(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            child: Row(
+              children: [
+                Flexible(
+                  child: UploadForms(index: i),
+                ),
+                const SizedBox(
+                  width: 10,
+                ),
+                _addRemoveButtonUploadField(i == uploadList.length - 1, i),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+    return friendsTextFields;
+  }
+
+  Widget _addRemoveButtonUploadField(bool add, int index) {
+    return InkWell(
+      onTap: () {
+        if (add) {
+          uploadList.insert(0, '');
+        } else {
+          uploadList.removeAt(index);
+        }
+        setState(() {});
+      },
+      child: Container(
+        width: 30,
+        height: 30,
+        decoration: BoxDecoration(
+          color: (add) ? AppTheme.primaryColor : Colors.red,
           borderRadius: BorderRadius.circular(20),
         ),
         child: Icon(
@@ -1053,7 +1371,7 @@ class _LevelFieldsState extends State<LevelFields> {
   @override
   Widget build(BuildContext context) {
     WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
-      levelController = _MultiStepFormState.languageList[widget.index];
+      levelController = _MultiStepFormState.levelList[widget.index];
     });
 
     return DropdownButtonFormField(
@@ -1081,7 +1399,7 @@ class _LevelFieldsState extends State<LevelFields> {
         ),
       ],
       onChanged: (v) =>
-          _MultiStepFormState.languageList[widget.index] = v.toString(),
+          _MultiStepFormState.levelList[widget.index] = v.toString(),
       decoration: InputDecoration(
         border: InputBorder.none,
         label: RichText(
@@ -1113,6 +1431,70 @@ class _LevelFieldsState extends State<LevelFields> {
         }
         return null;
       },
+    );
+  }
+}
+
+class UploadForms extends StatefulWidget {
+  final int index;
+
+  const UploadForms({Key? key, required this.index}) : super(key: key);
+
+  @override
+  State<UploadForms> createState() => _UploadFormsState();
+}
+
+class _UploadFormsState extends State<UploadForms> {
+  String? uploadTitle;
+  File? fileSource;
+
+  @override
+  void initState() {
+    super.initState();
+    uploadTitle = '';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
+      uploadTitle = _MultiStepFormState.uploadList[widget.index];
+    });
+
+    return Row(
+      children: [
+        Flexible(
+          child: TextFormField(
+            decoration: InputDecoration(
+              border: InputBorder.none,
+              label: Text(
+                'Title',
+                style: TextStyle(
+                  color: Colors.grey.shade700,
+                  fontSize: 16,
+                ),
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(
+          width: 10,
+        ),
+        InkWell(
+          onTap: () {},
+          child: Container(
+            width: 30,
+            height: 30,
+            decoration: BoxDecoration(
+              color: AppTheme.primaryColor,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: const Icon(
+              Icons.upload,
+              color: Colors.white,
+            ),
+          ),
+        )
+      ],
     );
   }
 }

@@ -1,8 +1,6 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:sv_rms_mobile/services/login.dart';
-import 'package:sv_rms_mobile/ui/home/home_screen.dart';
+import 'package:sv_rms_mobile/ui/authentication/profile_setup/multi_step_form.dart';
 
 import 'signup_screen.dart';
 
@@ -112,19 +110,37 @@ class _LoginScreenState extends State<LoginScreen> {
                         //   context,
                         //   HomeScreen.route,
                         // );
-                        login(
-                          emailController.text,
-                          passwordController.text,
-                        ).then((value) {
-                          Navigator.pushReplacementNamed(
-                            context,
-                            HomeScreen.route,
-                          );
-                        }).catchError((err) {
-                          if (kDebugMode) {
-                            print(err);
-                          }
-                        });
+                        // login(
+                        //   emailController.text,
+                        //   passwordController.text,
+                        // ).then((value) {
+                        //   Navigator.pushReplacementNamed(
+                        //     context,
+                        //     HomeScreen.route,
+                        //   );
+                        // }).catchError((err) {
+                        //   if (kDebugMode) {
+                        //     print(err);
+                        //   }
+                        // });
+                        showModalBottomSheet(
+                          isScrollControlled: true,
+                          isDismissible: false,
+                          backgroundColor: Colors.transparent,
+                          context: context,
+                          builder: (BuildContext context) => Container(
+                            height: MediaQuery.of(context).size.height * 0.9,
+                            clipBehavior: Clip.hardEdge,
+                            decoration: const BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(25.0),
+                                topRight: Radius.circular(25.0),
+                              ),
+                            ),
+                            child: const MultiStepForm(),
+                          ),
+                        );
                       },
                     ),
                   ),
