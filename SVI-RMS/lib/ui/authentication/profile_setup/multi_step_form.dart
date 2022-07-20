@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttericon/entypo_icons.dart';
 import 'package:fluttericon/font_awesome5_icons.dart';
 import 'package:fluttericon/mfg_labs_icons.dart';
+import 'package:sv_rms_mobile/ui/authentication/profile_setup/place_picker.dart';
 import 'package:sv_rms_mobile/utils/app_theme.dart';
 import 'package:text_chip_field/text_chip_field.dart';
 
@@ -332,6 +333,14 @@ class _MultiStepFormState extends State<MultiStepForm> {
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
                     child: TextFormField(
                       keyboardType: TextInputType.text,
+                      onChanged: (value) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const PlacePicker(),
+                          ),
+                        );
+                      },
                       decoration: InputDecoration(
                         border: InputBorder.none,
                         prefixIconConstraints:

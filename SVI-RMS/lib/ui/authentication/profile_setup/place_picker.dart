@@ -13,7 +13,7 @@ class PlacePicker extends StatefulWidget {
 }
 
 class _PlacePickerState extends State<PlacePicker> {
-  Mode _mode = Mode.overlay;
+  Mode mode = Mode.overlay;
   final homeScaffoldKey = GlobalKey<ScaffoldMessengerState>();
 
   @override
@@ -27,7 +27,6 @@ class _PlacePickerState extends State<PlacePicker> {
           child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          _buildDropdownMenu(),
           ElevatedButton(
             onPressed: _handlePressButton,
             child: const Text("Search places"),
@@ -43,25 +42,6 @@ class _PlacePickerState extends State<PlacePicker> {
     );
   }
 
-  Widget _buildDropdownMenu() => DropdownButton(
-        value: _mode,
-        items: const <DropdownMenuItem<Mode>>[
-          DropdownMenuItem<Mode>(
-            child: Text("Overlay"),
-            value: Mode.overlay,
-          ),
-          DropdownMenuItem<Mode>(
-            child: Text("Fullscreen"),
-            value: Mode.fullscreen,
-          ),
-        ],
-        onChanged: (Mode? m) {
-          setState(() {
-            _mode = m!;
-          });
-        },
-      );
-
   void onError(PlacesAutocompleteResponse? response) {
     homeScaffoldKey.currentState!.showSnackBar(
       SnackBar(content: Text(response!.errorMessage.toString())),
@@ -73,9 +53,9 @@ class _PlacePickerState extends State<PlacePicker> {
     // then get the Prediction selected
     Prediction? p = await PlacesAutocomplete.show(
       context: context,
-      apiKey: '',
+      apiKey: 'AIzaSyDxG0RL36UO7jWJ2vXQGHUk8O4qakRafzE',
       onError: onError,
-      mode: _mode,
+      mode: mode,
       language: "fr",
       decoration: InputDecoration(
         hintText: 'Search',
@@ -96,7 +76,7 @@ class _PlacePickerState extends State<PlacePicker> {
 Future<void> displayPrediction(
     Prediction p, ScaffoldMessengerState? scaffold) async {
   GoogleMapsPlaces _places = GoogleMapsPlaces(
-    apiKey: '',
+    apiKey: 'AIzaSyDxG0RL36UO7jWJ2vXQGHUk8O4qakRafzE',
     apiHeaders: await const GoogleApiHeaders().getHeaders(),
   );
   PlacesDetailsResponse detail = await _places.getDetailsByPlaceId(p.placeId!);
@@ -115,7 +95,7 @@ class CustomSearchScaffold extends PlacesAutocompleteWidget {
   CustomSearchScaffold({Key? key})
       : super(
           key: key,
-          apiKey: '',
+          apiKey: 'AIzaSyDxG0RL36UO7jWJ2vXQGHUk8O4qakRafzE',
           sessionToken: Uuid().generateV4(),
           language: "en",
           components: [Component(Component.country, "uk")],
