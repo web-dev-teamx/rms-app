@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_typing_uninitialized_variables
+
 import 'dart:io';
 import 'dart:ui';
 import 'package:cool_stepper/cool_stepper.dart';
@@ -10,6 +12,9 @@ import 'package:fluttericon/mfg_labs_icons.dart';
 import 'package:geocoder2/geocoder2.dart';
 import 'package:google_api_headers/google_api_headers.dart';
 import 'package:google_maps_webservice/places.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
+import 'package:sv_rms_mobile/main.dart';
 import 'package:sv_rms_mobile/utils/app_theme.dart';
 import 'package:text_chip_field/text_chip_field.dart';
 import 'package:geolocator/geolocator.dart';
@@ -31,24 +36,89 @@ class _MultiStepFormState extends State<MultiStepForm> {
   static List<String> levelList = [''];
   static List<String> uploadList = [''];
 
-  TextEditingController? _nameController;
+  TextEditingController? _firstNameController;
+  TextEditingController? _middleNameController;
+  TextEditingController? _lastNameController;
   TextEditingController? _locationController;
   TextEditingController? _cityCountryController;
   TextEditingController? _cityController;
   TextEditingController? _counrtyController;
   TextEditingController? _currentLocationController;
+  TextEditingController? _registrationDateController;
+  TextEditingController? _vendorTypeController;
+  TextEditingController? _nationalIDController;
+  TextEditingController? _houseStreetController;
+  TextEditingController? _provincePostalCodeController;
+  TextEditingController? _contactNumberPrimaryController;
+  TextEditingController? _contactNumberSecondaryController;
+  TextEditingController? _phoneNumberLandlineController;
+  TextEditingController? _whatsappContactNumberController;
+  TextEditingController? _emailAddressController;
+  TextEditingController? _skypeIdController;
   final homeScaffoldKey = GlobalKey<ScaffoldMessengerState>();
+  var imagePath;
+  DateTime selectedDate = DateTime.now();
+
+  Future<void> selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: selectedDate,
+      firstDate: DateTime.now().subtract(const Duration(days: 730)),
+      lastDate: DateTime.now().add(const Duration(days: 365)),
+    );
+    if (picked != null && picked != selectedDate) {
+      setState(() {
+        _registrationDateController = TextEditingController(
+            text: DateFormat('dd-MM-yyyy').format(picked).toString());
+        selectedDate = picked;
+        prefs!.setString('registration_date',
+            DateFormat('dd-MM-yyyy').format(picked).toString());
+      });
+    }
+  }
 
   @override
   void initState() {
     super.initState();
-    _nameController = TextEditingController();
-  }
-
-  @override
-  void dispose() {
-    _nameController!.dispose();
-    super.dispose();
+    imagePath = prefs!.getString('profile_image');
+    _locationController =
+        TextEditingController(text: prefs!.getString('location') ?? '');
+    _cityCountryController =
+        TextEditingController(text: prefs!.getString('city_country') ?? '');
+    _cityController =
+        TextEditingController(text: prefs!.getString('city') ?? '');
+    _counrtyController =
+        TextEditingController(text: prefs!.getString('city') ?? '');
+    _currentLocationController = TextEditingController(
+        text: prefs!.getString('current_location_country') ?? '');
+    _registrationDateController = TextEditingController(
+        text: prefs!.getString('registration_date') ?? '');
+    _nationalIDController =
+        TextEditingController(text: prefs!.getString('national_id') ?? '');
+    _houseStreetController =
+        TextEditingController(text: prefs!.getString('house_number') ?? '');
+    _provincePostalCodeController =
+        TextEditingController(text: prefs!.getString('postal_code') ?? '');
+    _contactNumberPrimaryController = TextEditingController(
+        text: prefs!.getString('contact_number_primary') ?? '');
+    _contactNumberSecondaryController = TextEditingController(
+        text: prefs!.getString('contact_number_secondary') ?? '');
+    _phoneNumberLandlineController = TextEditingController(
+        text: prefs!.getString('phone_number_landline') ?? '');
+    _whatsappContactNumberController = TextEditingController(
+        text: prefs!.getString('whatsapp_contact_number') ?? '');
+    _emailAddressController =
+        TextEditingController(text: prefs!.getString('email_address') ?? '');
+    _skypeIdController =
+        TextEditingController(text: prefs!.getString('skypeid') ?? '');
+    _firstNameController =
+        TextEditingController(text: prefs!.getString('first_name') ?? '');
+    _middleNameController =
+        TextEditingController(text: prefs!.getString('middle_name') ?? '');
+    _lastNameController =
+        TextEditingController(text: prefs!.getString('last_name') ?? '');
+    _vendorTypeController =
+        TextEditingController(text: prefs!.getString('vendor_type') ?? '');
   }
 
   @override
@@ -65,19 +135,35 @@ class _MultiStepFormState extends State<MultiStepForm> {
               const SizedBox(
                 height: 20,
               ),
-              const CircleAvatar(
-                backgroundColor: Colors.white,
+              CircleAvatar(
+                backgroundColor: Colors.transparent,
                 radius: 50,
-                child: Icon(
-                  Icons.person,
-                  size: 36,
-                ),
+                backgroundImage: imagePath != null
+                    ? Image.file(
+                        File(imagePath!),
+                        fit: BoxFit.fill,
+                      ).image
+                    : Image.asset(
+                        'assets/images/profile.png',
+                        fit: BoxFit.fill,
+                      ).image,
               ),
               const SizedBox(
                 height: 10,
               ),
               InkWell(
-                onTap: () {},
+                onTap: () async {
+                  await ImagePicker()
+                      .pickImage(source: ImageSource.gallery)
+                      .then((value) {
+                    if (value != null) {
+                      setState(() {
+                        imagePath = value.path;
+                        prefs!.setString('profile_image', value.path);
+                      });
+                    }
+                  });
+                },
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: const [
@@ -98,7 +184,6 @@ class _MultiStepFormState extends State<MultiStepForm> {
                 height: 20,
               ),
               Material(
-                //color: Colors.white,
                 borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(16.0),
                     topRight: Radius.circular(16.0)),
@@ -106,6 +191,17 @@ class _MultiStepFormState extends State<MultiStepForm> {
                   padding: const EdgeInsets.symmetric(
                       horizontal: 16.0, vertical: 8.0),
                   child: TextFormField(
+                    controller: _firstNameController,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'please enter your first name';
+                      } else {
+                        return null;
+                      }
+                    },
+                    onChanged: (value) {
+                      prefs!.setString('first_name', value);
+                    },
                     keyboardType: TextInputType.text,
                     decoration: InputDecoration(
                       label: RichText(
@@ -143,6 +239,10 @@ class _MultiStepFormState extends State<MultiStepForm> {
                   padding: const EdgeInsets.symmetric(
                       horizontal: 16.0, vertical: 8.0),
                   child: TextFormField(
+                    controller: _middleNameController,
+                    onChanged: (value) {
+                      prefs!.setString('middle_name', value);
+                    },
                     keyboardType: TextInputType.text,
                     decoration: InputDecoration(
                       border: InputBorder.none,
@@ -169,6 +269,17 @@ class _MultiStepFormState extends State<MultiStepForm> {
                   padding: const EdgeInsets.symmetric(
                       horizontal: 16.0, vertical: 8.0),
                   child: TextFormField(
+                    controller: _lastNameController,
+                    onChanged: (value) {
+                      prefs!.setString('last_name', value);
+                    },
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'please enter your last name';
+                      } else {
+                        return null;
+                      }
+                    },
                     keyboardType: TextInputType.text,
                     decoration: InputDecoration(
                       border: InputBorder.none,
@@ -209,6 +320,18 @@ class _MultiStepFormState extends State<MultiStepForm> {
                   padding: const EdgeInsets.symmetric(
                       horizontal: 16.0, vertical: 8.0),
                   child: TextFormField(
+                    controller: _vendorTypeController,
+                    readOnly: true,
+                    // validator: (value) {
+                    //   if (value!.isEmpty) {
+                    //     return 'please select vendor type';
+                    //   } else {
+                    //     return null;
+                    //   }
+                    // },
+                    onChanged: (value) {
+                      prefs!.setString('vendor_type', value);
+                    },
                     keyboardType: TextInputType.text,
                     decoration: InputDecoration(
                       border: InputBorder.none,
@@ -245,6 +368,19 @@ class _MultiStepFormState extends State<MultiStepForm> {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
                   child: TextFormField(
+                    controller: _registrationDateController,
+                    readOnly: true,
+                    onTap: () => selectDate(context),
+                    onChanged: (value) {
+                      prefs!.setString('registration_date', value);
+                    },
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return '\t\t\t\tplease select registration date';
+                      } else {
+                        return null;
+                      }
+                    },
                     keyboardType: TextInputType.datetime,
                     decoration: InputDecoration(
                       border: InputBorder.none,
@@ -284,6 +420,17 @@ class _MultiStepFormState extends State<MultiStepForm> {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
                   child: TextFormField(
+                    controller: _nationalIDController,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return '\t\t\t\tplease enter registration or tax No.';
+                      } else {
+                        return null;
+                      }
+                    },
+                    onChanged: (value) {
+                      prefs!.setString('national_id', value);
+                    },
                     keyboardType: TextInputType.number,
                     decoration: InputDecoration(
                       border: InputBorder.none,
@@ -344,6 +491,9 @@ class _MultiStepFormState extends State<MultiStepForm> {
                         setState(() {
                           _locationController = TextEditingController(
                               text: place.description.toString());
+
+                          prefs!.setString(
+                              'location', place.description.toString());
                         });
                         final plist = GoogleMapsPlaces(
                           apiKey: kGoogleApiKey,
@@ -351,8 +501,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                               await const GoogleApiHeaders().getHeaders(),
                         );
                         String placeid = place.placeId ?? "0";
-                        final detail =
-                            await plist.getDetailsByPlaceId(placeid);
+                        final detail = await plist.getDetailsByPlaceId(placeid);
                         final geometry = detail.result.geometry!;
                         await Geocoder2.getDataFromCoordinates(
                           googleMapApiKey: kGoogleApiKey,
@@ -360,13 +509,24 @@ class _MultiStepFormState extends State<MultiStepForm> {
                           longitude: geometry.location.lng,
                         ).then((value) {
                           setState(() {
+                            prefs!.setString('city_country_lat',
+                                geometry.location.lat.toString());
+                            prefs!.setString('city_country_lng',
+                                geometry.location.lng.toString());
+                            prefs!.setString(
+                                'city_country',
+                                value.city.toString() +
+                                    ', ' +
+                                    value.country.toString());
+                            prefs!.setString('city', value.city.toString());
+                            prefs!
+                                .setString('country', value.country.toString());
                             _cityController =
                                 TextEditingController(text: value.city);
                             _counrtyController =
                                 TextEditingController(text: value.country);
-                            _cityCountryController = 
-                                TextEditingController(
-                                    text: value.city + ', ' + value.country);
+                            _cityCountryController = TextEditingController(
+                                text: value.city + ', ' + value.country);
                           });
                         });
                       }
@@ -376,7 +536,10 @@ class _MultiStepFormState extends State<MultiStepForm> {
                       prefixIconConstraints:
                           const BoxConstraints(minHeight: 50, minWidth: 50),
                       contentPadding: const EdgeInsets.only(right: 20.0),
-                      prefixIcon: const Icon(FontAwesome5.home),
+                      prefixIcon: const Icon(
+                        FontAwesome5.home,
+                        size: 20,
+                      ),
                       label: Text(
                         'Full Registered Address',
                         style: TextStyle(
@@ -395,6 +558,16 @@ class _MultiStepFormState extends State<MultiStepForm> {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
                   child: TextFormField(
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return '\t\t\t\tplease enter city, country name';
+                      } else {
+                        return null;
+                      }
+                    },
+                    onChanged: (value) {
+                      prefs!.setString('city_country', value);
+                    },
                     controller: _cityCountryController,
                     keyboardType: TextInputType.text,
                     decoration: InputDecoration(
@@ -435,7 +608,11 @@ class _MultiStepFormState extends State<MultiStepForm> {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
                   child: TextFormField(
+                    controller: _houseStreetController,
                     keyboardType: TextInputType.text,
+                    onChanged: (value) {
+                      prefs!.setString('house_number', value);
+                    },
                     decoration: InputDecoration(
                       border: InputBorder.none,
                       prefixIconConstraints:
@@ -459,6 +636,16 @@ class _MultiStepFormState extends State<MultiStepForm> {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
                   child: TextFormField(
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return '\t\t\t\tplease enter city name';
+                      } else {
+                        return null;
+                      }
+                    },
+                    onChanged: (value) {
+                      prefs!.setString('city', value);
+                    },
                     controller: _cityController,
                     keyboardType: TextInputType.text,
                     decoration: InputDecoration(
@@ -497,11 +684,20 @@ class _MultiStepFormState extends State<MultiStepForm> {
               ),
               Material(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 16.0, vertical: 8.0),
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
                   child: TextFormField(
+                    controller: _provincePostalCodeController,
+                    onChanged: (value) {
+                      prefs!.setString('postal_code', value);
+                    },
                     keyboardType: TextInputType.text,
                     decoration: InputDecoration(
+                      prefixIconConstraints:
+                          const BoxConstraints(minHeight: 50, minWidth: 50),
+                      prefixIcon: const Icon(
+                        FontAwesome5.map_marked_alt,
+                        size: 20,
+                      ),
                       border: InputBorder.none,
                       label: Text(
                         'Province & Postal Code',
@@ -519,12 +715,24 @@ class _MultiStepFormState extends State<MultiStepForm> {
               ),
               Material(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 16.0, vertical: 8.0),
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
                   child: TextFormField(
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return '\t\t\t\tplease enter country name';
+                      } else {
+                        return null;
+                      }
+                    },
+                    onChanged: (value) {
+                      prefs!.setString('country', value);
+                    },
                     controller: _counrtyController,
                     keyboardType: TextInputType.text,
                     decoration: InputDecoration(
+                      prefixIconConstraints:
+                          const BoxConstraints(minHeight: 50, minWidth: 50),
+                      prefixIcon: const Icon(MfgLabs.globe),
                       border: InputBorder.none,
                       label: RichText(
                         text: TextSpan(
@@ -564,6 +772,10 @@ class _MultiStepFormState extends State<MultiStepForm> {
                       Expanded(
                         flex: 0,
                         child: CountryCodePicker(
+                          onChanged: (value) {
+                            prefs!.setString(
+                                'primary_country_code', value.toString());
+                          },
                           initialSelection: 'PK',
                           showCountryOnly: false,
                           showOnlyCountryWhenClosed: false,
@@ -573,11 +785,15 @@ class _MultiStepFormState extends State<MultiStepForm> {
                       Expanded(
                         flex: 2,
                         child: TextFormField(
+                          controller: _contactNumberPrimaryController,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return "Please Provide Your Conatact Number";
+                              return "please provide your conatact number";
                             }
                             return null;
+                          },
+                          onChanged: (value) {
+                            prefs!.setString('contact_number_primary', value);
                           },
                           keyboardType: TextInputType.phone,
                           decoration: InputDecoration(
@@ -623,6 +839,10 @@ class _MultiStepFormState extends State<MultiStepForm> {
                       Expanded(
                         flex: 0,
                         child: CountryCodePicker(
+                          onChanged: (value) {
+                            prefs!.setString(
+                                'secondary_country_code', value.toString());
+                          },
                           initialSelection: 'PK',
                           showCountryOnly: false,
                           showOnlyCountryWhenClosed: false,
@@ -632,12 +852,16 @@ class _MultiStepFormState extends State<MultiStepForm> {
                       Expanded(
                         flex: 2,
                         child: TextFormField(
+                          controller: _contactNumberSecondaryController,
                           keyboardType: TextInputType.phone,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return "Please Provide Your Conatact Number";
+                              return "please provide your conatact number";
                             }
                             return null;
+                          },
+                          onChanged: (value) {
+                            prefs!.setString('contact_number_secondary', value);
                           },
                           decoration: InputDecoration(
                             label: RichText(
@@ -677,6 +901,10 @@ class _MultiStepFormState extends State<MultiStepForm> {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
                   child: TextFormField(
+                    controller: _phoneNumberLandlineController,
+                    onChanged: (value) {
+                      prefs!.setString('phone_number_landline', value);
+                    },
                     keyboardType: TextInputType.phone,
                     decoration: InputDecoration(
                       border: InputBorder.none,
@@ -706,6 +934,10 @@ class _MultiStepFormState extends State<MultiStepForm> {
                       Expanded(
                         flex: 0,
                         child: CountryCodePicker(
+                          onChanged: (value) {
+                            prefs!.setString(
+                                'whatsapp_country_code', value.toString());
+                          },
                           initialSelection: 'PK',
                           showCountryOnly: false,
                           showOnlyCountryWhenClosed: false,
@@ -715,11 +947,15 @@ class _MultiStepFormState extends State<MultiStepForm> {
                       Expanded(
                         flex: 2,
                         child: TextFormField(
+                          controller: _whatsappContactNumberController,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return "Please Provide Your Conatact Number";
+                              return "please provide your whatsapp conatact number";
                             }
                             return null;
+                          },
+                          onChanged: (value) {
+                            prefs!.setString('whatsapp_contact_number', value);
                           },
                           keyboardType: TextInputType.phone,
                           decoration: InputDecoration(
@@ -760,6 +996,17 @@ class _MultiStepFormState extends State<MultiStepForm> {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
                   child: TextFormField(
+                    controller: _emailAddressController,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return '\t\t\t\tplease enter your email address';
+                      } else {
+                        return null;
+                      }
+                    },
+                    onChanged: (value) {
+                      prefs!.setString('email_address', value);
+                    },
                     keyboardType: TextInputType.emailAddress,
                     decoration: InputDecoration(
                       border: InputBorder.none,
@@ -799,6 +1046,17 @@ class _MultiStepFormState extends State<MultiStepForm> {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
                   child: TextFormField(
+                    controller: _skypeIdController,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return '\t\t\t\tplease enter stype id';
+                      } else {
+                        return null;
+                      }
+                    },
+                    onChanged: (value) {
+                      prefs!.setString('skypeid', value);
+                    },
                     decoration: InputDecoration(
                       border: InputBorder.none,
                       prefixIconConstraints:
@@ -847,6 +1105,9 @@ class _MultiStepFormState extends State<MultiStepForm> {
                   child: TextFormField(
                     controller: _currentLocationController,
                     readOnly: true,
+                    onChanged: (value) {
+                      prefs!.setString('current_location_country', value);
+                    },
                     onTap: () async {
                       showDialog(
                         barrierDismissible: false,
@@ -872,6 +1133,8 @@ class _MultiStepFormState extends State<MultiStepForm> {
                           setState(() {
                             _currentLocationController =
                                 TextEditingController(text: address.address);
+                            prefs!.setString(
+                                'current_location_country', address.address);
                           });
                         }).whenComplete(() {
                           Navigator.of(context).pop();
@@ -882,6 +1145,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                       border: InputBorder.none,
                       prefixIconConstraints:
                           const BoxConstraints(minHeight: 50, minWidth: 50),
+                      contentPadding: const EdgeInsets.only(right: 20.0),
                       prefixIcon: const Icon(Icons.my_location),
                       label: Text(
                         'Current Based Country & Location',
@@ -901,6 +1165,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
           ),
         ),
         validation: () {
+          if (_formKey.currentState!.validate()) {}
           return null;
         },
       ),
@@ -959,8 +1224,8 @@ class _MultiStepFormState extends State<MultiStepForm> {
                 bottomRight: Radius.circular(16.0),
               ),
               child: Padding(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 16.0, vertical: 8.0),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                 child: DropdownButtonFormField(
                   iconSize: 0.0,
                   items: const [
@@ -1007,11 +1272,12 @@ class _MultiStepFormState extends State<MultiStepForm> {
                       ),
                     ),
                   ),
-                  validator: (String? v) {
-                    if (v!.isEmpty) {
-                      return 'please select employment status';
+                  validator: (String? value) {
+                    if (value!.isEmpty) {
+                      return '';
+                    } else {
+                      return null;
                     }
-                    return null;
                   },
                 ),
               ),
@@ -1101,11 +1367,12 @@ class _MultiStepFormState extends State<MultiStepForm> {
                       ),
                     ),
                   ),
-                  validator: (String? v) {
-                    if (v!.isEmpty) {
-                      return 'please select atleast one toolkit';
+                  validator: (String? value) {
+                    if (value!.isEmpty) {
+                      return '';
+                    } else {
+                      return null;
                     }
-                    return null;
                   },
                 ),
               ),
@@ -1323,6 +1590,13 @@ class _LanguagesFieldsState extends State<LanguagesFields> {
     });
 
     return DropdownButtonFormField(
+      validator: (String? value) {
+        if (value!.isEmpty) {
+          return 'select language';
+        } else {
+          return null;
+        }
+      },
       iconSize: 0.0,
       items: const [
         DropdownMenuItem(
@@ -1376,12 +1650,6 @@ class _LanguagesFieldsState extends State<LanguagesFields> {
           ),
         ),
       ),
-      validator: (String? v) {
-        if (v!.isEmpty) {
-          return 'please select language';
-        }
-        return null;
-      },
     );
   }
 }
@@ -1460,11 +1728,12 @@ class _LevelFieldsState extends State<LevelFields> {
           ),
         ),
       ),
-      validator: (String? v) {
-        if (v!.isEmpty) {
-          return 'please select level';
+      validator: (String? value) {
+        if (value!.isEmpty) {
+          return 'select level';
+        } else {
+          return null;
         }
-        return null;
       },
     );
   }
@@ -1499,6 +1768,13 @@ class _UploadFormsState extends State<UploadForms> {
       children: [
         Flexible(
           child: TextFormField(
+            validator: (value) {
+              if (value!.isEmpty) {
+                return '';
+              } else {
+                return null;
+              }
+            },
             decoration: InputDecoration(
               border: InputBorder.none,
               label: Text(

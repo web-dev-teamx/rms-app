@@ -18,13 +18,15 @@ class SingupScreenFinal extends StatefulWidget {
   final TextEditingController fisrtnamecontroller;
   final TextEditingController lastnamecontroller;
   final TextEditingController comapnycontroller;
+  final List<String> fields;
 
-  const SingupScreenFinal(
-      {Key? key,
-      required this.fisrtnamecontroller,
-      required this.lastnamecontroller,
-      required this.comapnycontroller})
-      : super(key: key);
+  const SingupScreenFinal({
+    Key? key,
+    required this.fisrtnamecontroller,
+    required this.lastnamecontroller,
+    required this.comapnycontroller,
+    required this.fields,
+  }) : super(key: key);
 
   @override
   _SingupScreenFinalState createState() => _SingupScreenFinalState();

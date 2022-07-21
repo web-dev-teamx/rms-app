@@ -66,6 +66,7 @@ dependencies:
   cool_stepper: ^1.2.1
   fluttericon: ^2.0.0
   text_chip_field: ^0.0.5
+  multi_page_form: ^1.0.4
   
   
 

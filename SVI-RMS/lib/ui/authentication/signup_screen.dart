@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:sv_rms_mobile/main.dart';
 import 'package:sv_rms_mobile/ui/authentication/signup_screen_final.dart';
 
 class SignupScreen extends StatefulWidget {
@@ -30,17 +30,7 @@ class _SignupScreenState extends State<SignupScreen> {
   bool itstock = false;
   bool enduser = false;
   bool outsource = false;
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
+  List<String> fileds = [];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -71,10 +61,13 @@ class _SignupScreenState extends State<SignupScreen> {
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => SingupScreenFinal(
-                                fisrtnamecontroller: firstnamecontroller,
-                                lastnamecontroller: lastnamecontroller,
-                                comapnycontroller: comapnycontroller)),
+                          builder: (context) => SingupScreenFinal(
+                            fields: fileds,
+                            fisrtnamecontroller: firstnamecontroller,
+                            lastnamecontroller: lastnamecontroller,
+                            comapnycontroller: comapnycontroller,
+                          ),
+                        ),
                       );
                     },
                   ),
@@ -118,10 +111,9 @@ class _SignupScreenState extends State<SignupScreen> {
                         icon: const Icon(Icons.arrow_downward),
                         iconSize: 24,
                         onChanged: (String? newValue) {
-                          if (kDebugMode) {
-                            print(newValue);
-                          }
                           setState(() {
+                            prefs!
+                                .setString('vendor_type', newValue.toString());
                             dropdownValue = newValue!;
                             index = newValue;
                           });
@@ -197,6 +189,11 @@ class _SignupScreenState extends State<SignupScreen> {
                                 horizontal: 16.0, vertical: 8.0),
                             child: TextFormField(
                               controller: firstnamecontroller,
+                              onChanged: (value) {
+                                setState(() {
+                                  prefs!.setString('first_name', value);
+                                });
+                              },
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
                                   return "Please Provide Your Firstname";
@@ -219,7 +216,6 @@ class _SignupScreenState extends State<SignupScreen> {
                       height: 2,
                     ),
                   ),
-                  // lastname
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 24.0),
                     child: SizedBox(
@@ -235,9 +231,14 @@ class _SignupScreenState extends State<SignupScreen> {
                             controller: lastnamecontroller,
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return "Please Provide Your lastname";
+                                return "please provide your lastname";
                               }
                               return null;
+                            },
+                            onChanged: (value) {
+                              setState(() {
+                                prefs!.setString('last_name', value);
+                              });
                             },
                             decoration: const InputDecoration(
                               hintText: "Your Lastname",
@@ -280,6 +281,11 @@ class _SignupScreenState extends State<SignupScreen> {
                       setState(() {
                         breakfix = newValue!;
                       });
+                      if (newValue!) {
+                        fileds.add('BREAK FIX');
+                      } else {
+                        fileds.remove('BREAK FIX');
+                      }
                     },
                     controlAffinity: ListTileControlAffinity
                         .leading, //  <-- leading Checkbox
@@ -298,6 +304,11 @@ class _SignupScreenState extends State<SignupScreen> {
                       setState(() {
                         rollout = newValue!;
                       });
+                      if (newValue!) {
+                        fileds.add('ROLLOUTS');
+                      } else {
+                        fileds.remove('ROLLOUTS');
+                      }
                     },
                     controlAffinity: ListTileControlAffinity
                         .leading, //  <-- leading Checkbox
@@ -322,6 +333,11 @@ class _SignupScreenState extends State<SignupScreen> {
                       setState(() {
                         cisco = newValue!;
                       });
+                      if (newValue!) {
+                        fileds.add('CISCO SUPPORT');
+                      } else {
+                        fileds.remove('CISCO SUPPORT');
+                      }
                     },
                     controlAffinity: ListTileControlAffinity
                         .leading, //  <-- leading Checkbox
@@ -340,6 +356,11 @@ class _SignupScreenState extends State<SignupScreen> {
                       setState(() {
                         remoteit = newValue!;
                       });
+                      if (newValue!) {
+                        fileds.add('REMOTE IT SUPPORT');
+                      } else {
+                        fileds.remove('REMOTE IT SUPPORT');
+                      }
                     },
                     controlAffinity: ListTileControlAffinity
                         .leading, //  <-- leading Checkbox
@@ -364,6 +385,11 @@ class _SignupScreenState extends State<SignupScreen> {
                       setState(() {
                         itstock = newValue!;
                       });
+                      if (newValue!) {
+                        fileds.add('IT STOCK SUPPORT');
+                      } else {
+                        fileds.remove('IT STOCK SUPPORT');
+                      }
                     },
                     controlAffinity: ListTileControlAffinity
                         .leading, //  <-- leading Checkbox
@@ -382,6 +408,11 @@ class _SignupScreenState extends State<SignupScreen> {
                       setState(() {
                         enduser = newValue!;
                       });
+                      if (newValue!) {
+                        fileds.add('END USER COMPUTING');
+                      } else {
+                        fileds.remove('END USER COMPUTING');
+                      }
                     },
                     controlAffinity: ListTileControlAffinity
                         .leading, //  <-- leading Checkbox
@@ -400,6 +431,11 @@ class _SignupScreenState extends State<SignupScreen> {
                 setState(() {
                   outsource = newValue!;
                 });
+                if (newValue!) {
+                  fileds.add('OUTSOURCED IT RESOURCE DATA CENTER SUPPORT');
+                } else {
+                  fileds.remove('OUTSOURCED IT RESOURCE DATA CENTER SUPPORT');
+                }
               },
               controlAffinity:
                   ListTileControlAffinity.leading, //  <-- leading Checkbox

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sv_rms_mobile/blocs/services_bloc.dart';
 import 'package:sv_rms_mobile/ui/profile_details/my_payments/my_payments_screen.dart';
 
@@ -8,8 +9,10 @@ import 'app/app.dart';
 import 'app/config_store.dart';
 import 'app/session_handler.dart';
 
+SharedPreferences? prefs;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  prefs = await SharedPreferences.getInstance();
   final appSession = await _initializeSession();
   SystemChrome.setPreferredOrientations(
     [DeviceOrientation.portraitUp],
