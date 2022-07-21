@@ -1,15 +1,20 @@
 import 'dart:io';
 import 'dart:ui';
-
 import 'package:cool_stepper/cool_stepper.dart';
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_google_places/flutter_google_places.dart';
 import 'package:fluttericon/entypo_icons.dart';
 import 'package:fluttericon/font_awesome5_icons.dart';
 import 'package:fluttericon/mfg_labs_icons.dart';
-import 'package:sv_rms_mobile/ui/authentication/profile_setup/place_picker.dart';
+import 'package:geocoder2/geocoder2.dart';
+import 'package:google_api_headers/google_api_headers.dart';
+import 'package:google_maps_webservice/places.dart';
 import 'package:sv_rms_mobile/utils/app_theme.dart';
 import 'package:text_chip_field/text_chip_field.dart';
+import 'package:geolocator/geolocator.dart';
+
+const kGoogleApiKey = "AIzaSyDxG0RL36UO7jWJ2vXQGHUk8O4qakRafzE";
 
 class MultiStepForm extends StatefulWidget {
   const MultiStepForm({Key? key}) : super(key: key);
@@ -27,6 +32,12 @@ class _MultiStepFormState extends State<MultiStepForm> {
   static List<String> uploadList = [''];
 
   TextEditingController? _nameController;
+  TextEditingController? _locationController;
+  TextEditingController? _cityCountryController;
+  TextEditingController? _cityController;
+  TextEditingController? _counrtyController;
+  TextEditingController? _currentLocationController;
+  final homeScaffoldKey = GlobalKey<ScaffoldMessengerState>();
 
   @override
   void initState() {
@@ -86,43 +97,40 @@ class _MultiStepFormState extends State<MultiStepForm> {
               const SizedBox(
                 height: 20,
               ),
-              SizedBox(
-                height: 70,
-                child: Material(
-                  //color: Colors.white,
-                  borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(16.0),
-                      topRight: Radius.circular(16.0)),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16.0, vertical: 8.0),
-                    child: TextFormField(
-                      keyboardType: TextInputType.text,
-                      decoration: InputDecoration(
-                        label: RichText(
-                          text: TextSpan(
-                            children: [
-                              TextSpan(
-                                text: 'First Name',
-                                style: TextStyle(
-                                  color: Colors.grey.shade700,
-                                  fontSize: 16,
-                                ),
+              Material(
+                //color: Colors.white,
+                borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(16.0),
+                    topRight: Radius.circular(16.0)),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 16.0, vertical: 8.0),
+                  child: TextFormField(
+                    keyboardType: TextInputType.text,
+                    decoration: InputDecoration(
+                      label: RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                              text: 'First Name',
+                              style: TextStyle(
+                                color: Colors.grey.shade700,
+                                fontSize: 16,
                               ),
-                              const TextSpan(
-                                text: ' *',
-                                style: TextStyle(
-                                  color: Colors.red,
-                                  fontFeatures: [
-                                    FontFeature.enable('sups'),
-                                  ],
-                                ),
+                            ),
+                            const TextSpan(
+                              text: ' *',
+                              style: TextStyle(
+                                color: Colors.red,
+                                fontFeatures: [
+                                  FontFeature.enable('sups'),
+                                ],
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
-                        border: InputBorder.none,
                       ),
+                      border: InputBorder.none,
                     ),
                   ),
                 ),
@@ -130,22 +138,19 @@ class _MultiStepFormState extends State<MultiStepForm> {
               const Divider(
                 height: 2,
               ),
-              SizedBox(
-                height: 70,
-                child: Material(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16.0, vertical: 8.0),
-                    child: TextFormField(
-                      keyboardType: TextInputType.text,
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        label: Text(
-                          'Middle Name',
-                          style: TextStyle(
-                            color: Colors.grey.shade700,
-                            fontSize: 16,
-                          ),
+              Material(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 16.0, vertical: 8.0),
+                  child: TextFormField(
+                    keyboardType: TextInputType.text,
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      label: Text(
+                        'Middle Name',
+                        style: TextStyle(
+                          color: Colors.grey.shade700,
+                          fontSize: 16,
                         ),
                       ),
                     ),
@@ -155,41 +160,38 @@ class _MultiStepFormState extends State<MultiStepForm> {
               const Divider(
                 height: 2,
               ),
-              SizedBox(
-                height: 70,
-                child: Material(
-                  borderRadius: const BorderRadius.only(
-                    bottomLeft: Radius.circular(16.0),
-                    bottomRight: Radius.circular(16.0),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16.0, vertical: 8.0),
-                    child: TextFormField(
-                      keyboardType: TextInputType.text,
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        label: RichText(
-                          text: TextSpan(
-                            children: [
-                              TextSpan(
-                                text: 'Last Name',
-                                style: TextStyle(
-                                  color: Colors.grey.shade700,
-                                  fontSize: 16,
-                                ),
+              Material(
+                borderRadius: const BorderRadius.only(
+                  bottomLeft: Radius.circular(16.0),
+                  bottomRight: Radius.circular(16.0),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 16.0, vertical: 8.0),
+                  child: TextFormField(
+                    keyboardType: TextInputType.text,
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      label: RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                              text: 'Last Name',
+                              style: TextStyle(
+                                color: Colors.grey.shade700,
+                                fontSize: 16,
                               ),
-                              const TextSpan(
-                                text: ' *',
-                                style: TextStyle(
-                                  color: Colors.red,
-                                  fontFeatures: [
-                                    FontFeature.enable('sups'),
-                                  ],
-                                ),
+                            ),
+                            const TextSpan(
+                              text: ' *',
+                              style: TextStyle(
+                                color: Colors.red,
+                                fontFeatures: [
+                                  FontFeature.enable('sups'),
+                                ],
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
@@ -199,40 +201,37 @@ class _MultiStepFormState extends State<MultiStepForm> {
               const SizedBox(
                 height: 20,
               ),
-              SizedBox(
-                height: 70,
-                child: Material(
-                  borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(16.0),
-                      topRight: Radius.circular(16.0)),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16.0, vertical: 8.0),
-                    child: TextFormField(
-                      keyboardType: TextInputType.text,
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        label: RichText(
-                          text: TextSpan(
-                            children: [
-                              TextSpan(
-                                text: 'Vendor Type',
-                                style: TextStyle(
-                                  color: Colors.grey.shade700,
-                                  fontSize: 16,
-                                ),
+              Material(
+                borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(16.0),
+                    topRight: Radius.circular(16.0)),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 16.0, vertical: 8.0),
+                  child: TextFormField(
+                    keyboardType: TextInputType.text,
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      label: RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                              text: 'Vendor Type',
+                              style: TextStyle(
+                                color: Colors.grey.shade700,
+                                fontSize: 16,
                               ),
-                              const TextSpan(
-                                text: ' *',
-                                style: TextStyle(
-                                  color: Colors.red,
-                                  fontFeatures: [
-                                    FontFeature.enable('sups'),
-                                  ],
-                                ),
+                            ),
+                            const TextSpan(
+                              text: ' *',
+                              style: TextStyle(
+                                color: Colors.red,
+                                fontFeatures: [
+                                  FontFeature.enable('sups'),
+                                ],
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
@@ -242,41 +241,38 @@ class _MultiStepFormState extends State<MultiStepForm> {
               const Divider(
                 height: 2,
               ),
-              SizedBox(
-                height: 70,
-                child: Material(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: TextFormField(
-                      keyboardType: TextInputType.datetime,
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        label: RichText(
-                          text: TextSpan(
-                            children: [
-                              TextSpan(
-                                text: 'Registration Date',
-                                style: TextStyle(
-                                  color: Colors.grey.shade700,
-                                  fontSize: 16,
-                                ),
+              Material(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: TextFormField(
+                    keyboardType: TextInputType.datetime,
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      label: RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                              text: 'Registration Date',
+                              style: TextStyle(
+                                color: Colors.grey.shade700,
+                                fontSize: 16,
                               ),
-                              const TextSpan(
-                                text: ' *',
-                                style: TextStyle(
-                                  color: Colors.red,
-                                  fontFeatures: [
-                                    FontFeature.enable('sups'),
-                                  ],
-                                ),
+                            ),
+                            const TextSpan(
+                              text: ' *',
+                              style: TextStyle(
+                                color: Colors.red,
+                                fontFeatures: [
+                                  FontFeature.enable('sups'),
+                                ],
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
-                        prefixIconConstraints:
-                            const BoxConstraints(minHeight: 50, minWidth: 50),
-                        prefixIcon: const Icon(FontAwesome5.calendar_alt),
                       ),
+                      prefixIconConstraints:
+                          const BoxConstraints(minHeight: 50, minWidth: 50),
+                      prefixIcon: const Icon(FontAwesome5.calendar_alt),
                     ),
                   ),
                 ),
@@ -284,39 +280,36 @@ class _MultiStepFormState extends State<MultiStepForm> {
               const Divider(
                 height: 2,
               ),
-              SizedBox(
-                height: 70,
-                child: Material(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: TextFormField(
-                      keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        prefixIconConstraints:
-                            const BoxConstraints(minHeight: 50, minWidth: 50),
-                        prefixIcon: const Icon(FontAwesome5.slack_hash),
-                        label: RichText(
-                          text: TextSpan(
-                            children: [
-                              TextSpan(
-                                text: 'Registration Or Tax Number',
-                                style: TextStyle(
-                                  color: Colors.grey.shade700,
-                                  fontSize: 16,
-                                ),
+              Material(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: TextFormField(
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      prefixIconConstraints:
+                          const BoxConstraints(minHeight: 50, minWidth: 50),
+                      prefixIcon: const Icon(FontAwesome5.slack_hash),
+                      label: RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                              text: 'Registration Or Tax Number',
+                              style: TextStyle(
+                                color: Colors.grey.shade700,
+                                fontSize: 16,
                               ),
-                              const TextSpan(
-                                text: ' *',
-                                style: TextStyle(
-                                  color: Colors.red,
-                                  fontFeatures: [
-                                    FontFeature.enable('sups'),
-                                  ],
-                                ),
+                            ),
+                            const TextSpan(
+                              text: ' *',
+                              style: TextStyle(
+                                color: Colors.red,
+                                fontFeatures: [
+                                  FontFeature.enable('sups'),
+                                ],
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
@@ -326,32 +319,69 @@ class _MultiStepFormState extends State<MultiStepForm> {
               const Divider(
                 height: 2,
               ),
-              SizedBox(
-                height: 70,
-                child: Material(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: TextFormField(
-                      keyboardType: TextInputType.text,
-                      onChanged: (value) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const PlacePicker(),
-                          ),
+              Material(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: TextFormField(
+                    readOnly: true,
+                    controller: _locationController,
+                    maxLines: 1,
+                    keyboardType: TextInputType.text,
+                    onTap: () async {
+                      var place = await PlacesAutocomplete.show(
+                          context: context,
+                          apiKey: kGoogleApiKey,
+                          mode: Mode.overlay,
+                          types: [],
+                          strictbounds: false,
+                          components: [
+                            Component(Component.country, 'pk'),
+                            Component(Component.country, 'in'),
+                          ],
+                          onError: (err) {});
+
+                      if (place != null) {
+                        setState(() {
+                          _locationController = TextEditingController(
+                              text: place.description.toString());
+                        });
+                        final plist = GoogleMapsPlaces(
+                          apiKey: kGoogleApiKey,
+                          apiHeaders:
+                              await const GoogleApiHeaders().getHeaders(),
                         );
-                      },
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        prefixIconConstraints:
-                            const BoxConstraints(minHeight: 50, minWidth: 50),
-                        prefixIcon: const Icon(FontAwesome5.home),
-                        label: Text(
-                          'Full Registered Address',
-                          style: TextStyle(
-                            color: Colors.grey.shade700,
-                            fontSize: 16,
-                          ),
+                        String placeid = place.placeId ?? "0";
+                        final detail =
+                            await plist.getDetailsByPlaceId(placeid);
+                        final geometry = detail.result.geometry!;
+                        await Geocoder2.getDataFromCoordinates(
+                          googleMapApiKey: kGoogleApiKey,
+                          latitude: geometry.location.lat,
+                          longitude: geometry.location.lng,
+                        ).then((value) {
+                          setState(() {
+                            _cityController =
+                                TextEditingController(text: value.city);
+                            _counrtyController =
+                                TextEditingController(text: value.country);
+                            _cityCountryController = 
+                                TextEditingController(
+                                    text: value.city + ', ' + value.country);
+                          });
+                        });
+                      }
+                    },
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      prefixIconConstraints:
+                          const BoxConstraints(minHeight: 50, minWidth: 50),
+                      contentPadding: const EdgeInsets.only(right: 20.0),
+                      prefixIcon: const Icon(FontAwesome5.home),
+                      label: Text(
+                        'Full Registered Address',
+                        style: TextStyle(
+                          color: Colors.grey.shade700,
+                          fontSize: 16,
                         ),
                       ),
                     ),
@@ -361,324 +391,37 @@ class _MultiStepFormState extends State<MultiStepForm> {
               const Divider(
                 height: 2,
               ),
-              SizedBox(
-                height: 70,
-                child: Material(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: TextFormField(
-                      keyboardType: TextInputType.text,
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        prefixIconConstraints:
-                            const BoxConstraints(minHeight: 50, minWidth: 50),
-                        prefixIcon: const Icon(MfgLabs.globe_inv),
-                        label: RichText(
-                          text: TextSpan(
-                            children: [
-                              TextSpan(
-                                text: 'City, Country',
-                                style: TextStyle(
-                                  color: Colors.grey.shade700,
-                                  fontSize: 16,
-                                ),
+              Material(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: TextFormField(
+                    controller: _cityCountryController,
+                    keyboardType: TextInputType.text,
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      prefixIconConstraints:
+                          const BoxConstraints(minHeight: 50, minWidth: 50),
+                      prefixIcon: const Icon(MfgLabs.globe_inv),
+                      label: RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                              text: 'City, Country',
+                              style: TextStyle(
+                                color: Colors.grey.shade700,
+                                fontSize: 16,
                               ),
-                              const TextSpan(
-                                text: ' *',
-                                style: TextStyle(
-                                  color: Colors.red,
-                                  fontFeatures: [
-                                    FontFeature.enable('sups'),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              const Divider(
-                height: 2,
-              ),
-              SizedBox(
-                height: 70,
-                child: Material(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: TextFormField(
-                      keyboardType: TextInputType.text,
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        prefixIconConstraints:
-                            const BoxConstraints(minHeight: 50, minWidth: 50),
-                        prefixIcon: const Icon(FontAwesome5.slack_hash),
-                        label: Text(
-                          'House Number & Street',
-                          style: TextStyle(
-                            color: Colors.grey.shade700,
-                            fontSize: 16,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              const Divider(
-                height: 2,
-              ),
-              SizedBox(
-                height: 70,
-                child: Material(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: TextFormField(
-                      keyboardType: TextInputType.text,
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        prefixIconConstraints:
-                            const BoxConstraints(minHeight: 50, minWidth: 50),
-                        prefixIcon: const Icon(Icons.location_city),
-                        label: RichText(
-                          text: TextSpan(
-                            children: [
-                              TextSpan(
-                                text: 'City',
-                                style: TextStyle(
-                                  color: Colors.grey.shade700,
-                                  fontSize: 16,
-                                ),
-                              ),
-                              const TextSpan(
-                                text: ' *',
-                                style: TextStyle(
-                                  color: Colors.red,
-                                  fontFeatures: [
-                                    FontFeature.enable('sups'),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              const Divider(
-                height: 2,
-              ),
-              SizedBox(
-                height: 70,
-                child: Material(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16.0, vertical: 8.0),
-                    child: TextFormField(
-                      keyboardType: TextInputType.text,
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        label: Text(
-                          'Province & Postal Code',
-                          style: TextStyle(
-                            color: Colors.grey.shade700,
-                            fontSize: 16,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              const Divider(
-                height: 2,
-              ),
-              SizedBox(
-                height: 70,
-                child: Material(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16.0, vertical: 8.0),
-                    child: TextFormField(
-                      keyboardType: TextInputType.text,
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        label: RichText(
-                          text: TextSpan(
-                            children: [
-                              TextSpan(
-                                text: 'Country',
-                                style: TextStyle(
-                                  color: Colors.grey.shade700,
-                                  fontSize: 16,
-                                ),
-                              ),
-                              const TextSpan(
-                                text: ' *',
-                                style: TextStyle(
-                                  color: Colors.red,
-                                  fontFeatures: [
-                                    FontFeature.enable('sups'),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              const Divider(
-                height: 2,
-              ),
-              SizedBox(
-                height: 70,
-                child: Material(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          flex: 0,
-                          child: CountryCodePicker(
-                            initialSelection: 'PK',
-                            showCountryOnly: false,
-                            showOnlyCountryWhenClosed: false,
-                            alignLeft: false,
-                          ),
-                        ),
-                        Expanded(
-                          flex: 2,
-                          child: TextFormField(
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return "Please Provide Your Conatact Number";
-                              }
-                              return null;
-                            },
-                            keyboardType: TextInputType.phone,
-                            decoration: InputDecoration(
-                              label: RichText(
-                                text: TextSpan(
-                                  children: [
-                                    TextSpan(
-                                      text: 'Contact Number(Primary)',
-                                      style: TextStyle(
-                                        color: Colors.grey.shade700,
-                                        fontSize: 16,
-                                      ),
-                                    ),
-                                    const TextSpan(
-                                      text: ' *',
-                                      style: TextStyle(
-                                        color: Colors.red,
-                                        fontFeatures: [
-                                          FontFeature.enable('sups'),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              border: InputBorder.none,
                             ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              const Divider(
-                height: 2,
-              ),
-              SizedBox(
-                height: 70,
-                child: Material(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          flex: 0,
-                          child: CountryCodePicker(
-                            initialSelection: 'PK',
-                            showCountryOnly: false,
-                            showOnlyCountryWhenClosed: false,
-                            alignLeft: false,
-                          ),
-                        ),
-                        Expanded(
-                          flex: 2,
-                          child: TextFormField(
-                            keyboardType: TextInputType.phone,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return "Please Provide Your Conatact Number";
-                              }
-                              return null;
-                            },
-                            decoration: InputDecoration(
-                              label: RichText(
-                                text: TextSpan(
-                                  children: [
-                                    TextSpan(
-                                      text: 'Contact Number(Seconday)',
-                                      style: TextStyle(
-                                        color: Colors.grey.shade700,
-                                        fontSize: 16,
-                                      ),
-                                    ),
-                                    const TextSpan(
-                                      text: ' *',
-                                      style: TextStyle(
-                                        color: Colors.red,
-                                        fontFeatures: [
-                                          FontFeature.enable('sups'),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
+                            const TextSpan(
+                              text: ' *',
+                              style: TextStyle(
+                                color: Colors.red,
+                                fontFeatures: [
+                                  FontFeature.enable('sups'),
+                                ],
                               ),
-                              border: InputBorder.none,
                             ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              const Divider(
-                height: 2,
-              ),
-              SizedBox(
-                height: 70,
-                child: Material(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: TextFormField(
-                      keyboardType: TextInputType.phone,
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        prefixIconConstraints:
-                            const BoxConstraints(minHeight: 50, minWidth: 50),
-                        prefixIcon: const Icon(Icons.phone),
-                        label: Text(
-                          'Phone Number (Landline)',
-                          style: TextStyle(
-                            color: Colors.grey.shade700,
-                            fontSize: 16,
-                          ),
+                          ],
                         ),
                       ),
                     ),
@@ -688,101 +431,21 @@ class _MultiStepFormState extends State<MultiStepForm> {
               const Divider(
                 height: 2,
               ),
-              SizedBox(
-                height: 70,
-                child: Material(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          flex: 0,
-                          child: CountryCodePicker(
-                            initialSelection: 'PK',
-                            showCountryOnly: false,
-                            showOnlyCountryWhenClosed: false,
-                            alignLeft: false,
-                          ),
-                        ),
-                        Expanded(
-                          flex: 2,
-                          child: TextFormField(
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return "Please Provide Your Conatact Number";
-                              }
-                              return null;
-                            },
-                            keyboardType: TextInputType.phone,
-                            decoration: InputDecoration(
-                              label: RichText(
-                                text: TextSpan(
-                                  children: [
-                                    TextSpan(
-                                      text: 'Whatsapp Contact Number',
-                                      style: TextStyle(
-                                        color: Colors.grey.shade700,
-                                        fontSize: 16,
-                                      ),
-                                    ),
-                                    const TextSpan(
-                                      text: ' *',
-                                      style: TextStyle(
-                                        color: Colors.red,
-                                        fontFeatures: [
-                                          FontFeature.enable('sups'),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              border: InputBorder.none,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              const Divider(
-                height: 2,
-              ),
-              SizedBox(
-                height: 70,
-                child: Material(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: TextFormField(
-                      keyboardType: TextInputType.emailAddress,
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        prefixIconConstraints:
-                            const BoxConstraints(minHeight: 50, minWidth: 50),
-                        prefixIcon: const Icon(Icons.email),
-                        label: RichText(
-                          text: TextSpan(
-                            children: [
-                              TextSpan(
-                                text: 'Email Address',
-                                style: TextStyle(
-                                  color: Colors.grey.shade700,
-                                  fontSize: 16,
-                                ),
-                              ),
-                              const TextSpan(
-                                text: ' *',
-                                style: TextStyle(
-                                  color: Colors.red,
-                                  fontFeatures: [
-                                    FontFeature.enable('sups'),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
+              Material(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: TextFormField(
+                    keyboardType: TextInputType.text,
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      prefixIconConstraints:
+                          const BoxConstraints(minHeight: 50, minWidth: 50),
+                      prefixIcon: const Icon(FontAwesome5.slack_hash),
+                      label: Text(
+                        'House Number & Street',
+                        style: TextStyle(
+                          color: Colors.grey.shade700,
+                          fontSize: 16,
                         ),
                       ),
                     ),
@@ -792,38 +455,375 @@ class _MultiStepFormState extends State<MultiStepForm> {
               const Divider(
                 height: 2,
               ),
-              SizedBox(
-                height: 70,
-                child: Material(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: TextFormField(
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        prefixIconConstraints:
-                            const BoxConstraints(minHeight: 50, minWidth: 50),
-                        prefixIcon: const Icon(FontAwesome5.skype),
-                        label: RichText(
-                          text: TextSpan(
-                            children: [
-                              TextSpan(
-                                text: 'Skype ID',
-                                style: TextStyle(
-                                  color: Colors.grey.shade700,
-                                  fontSize: 16,
-                                ),
+              Material(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: TextFormField(
+                    controller: _cityController,
+                    keyboardType: TextInputType.text,
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      prefixIconConstraints:
+                          const BoxConstraints(minHeight: 50, minWidth: 50),
+                      prefixIcon: const Icon(Icons.location_city),
+                      label: RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                              text: 'City',
+                              style: TextStyle(
+                                color: Colors.grey.shade700,
+                                fontSize: 16,
                               ),
-                              const TextSpan(
-                                text: ' *',
-                                style: TextStyle(
-                                  color: Colors.red,
-                                  fontFeatures: [
-                                    FontFeature.enable('sups'),
-                                  ],
-                                ),
+                            ),
+                            const TextSpan(
+                              text: ' *',
+                              style: TextStyle(
+                                color: Colors.red,
+                                fontFeatures: [
+                                  FontFeature.enable('sups'),
+                                ],
                               ),
-                            ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const Divider(
+                height: 2,
+              ),
+              Material(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 16.0, vertical: 8.0),
+                  child: TextFormField(
+                    keyboardType: TextInputType.text,
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      label: Text(
+                        'Province & Postal Code',
+                        style: TextStyle(
+                          color: Colors.grey.shade700,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const Divider(
+                height: 2,
+              ),
+              Material(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 16.0, vertical: 8.0),
+                  child: TextFormField(
+                    controller: _counrtyController,
+                    keyboardType: TextInputType.text,
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      label: RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                              text: 'Country',
+                              style: TextStyle(
+                                color: Colors.grey.shade700,
+                                fontSize: 16,
+                              ),
+                            ),
+                            const TextSpan(
+                              text: ' *',
+                              style: TextStyle(
+                                color: Colors.red,
+                                fontFeatures: [
+                                  FontFeature.enable('sups'),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const Divider(
+                height: 2,
+              ),
+              Material(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        flex: 0,
+                        child: CountryCodePicker(
+                          initialSelection: 'PK',
+                          showCountryOnly: false,
+                          showOnlyCountryWhenClosed: false,
+                          alignLeft: false,
+                        ),
+                      ),
+                      Expanded(
+                        flex: 2,
+                        child: TextFormField(
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "Please Provide Your Conatact Number";
+                            }
+                            return null;
+                          },
+                          keyboardType: TextInputType.phone,
+                          decoration: InputDecoration(
+                            label: RichText(
+                              text: TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: 'Contact Number(Primary)',
+                                    style: TextStyle(
+                                      color: Colors.grey.shade700,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                  const TextSpan(
+                                    text: ' *',
+                                    style: TextStyle(
+                                      color: Colors.red,
+                                      fontFeatures: [
+                                        FontFeature.enable('sups'),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            border: InputBorder.none,
                           ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const Divider(
+                height: 2,
+              ),
+              Material(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        flex: 0,
+                        child: CountryCodePicker(
+                          initialSelection: 'PK',
+                          showCountryOnly: false,
+                          showOnlyCountryWhenClosed: false,
+                          alignLeft: false,
+                        ),
+                      ),
+                      Expanded(
+                        flex: 2,
+                        child: TextFormField(
+                          keyboardType: TextInputType.phone,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "Please Provide Your Conatact Number";
+                            }
+                            return null;
+                          },
+                          decoration: InputDecoration(
+                            label: RichText(
+                              text: TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: 'Contact Number(Seconday)',
+                                    style: TextStyle(
+                                      color: Colors.grey.shade700,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                  const TextSpan(
+                                    text: ' *',
+                                    style: TextStyle(
+                                      color: Colors.red,
+                                      fontFeatures: [
+                                        FontFeature.enable('sups'),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            border: InputBorder.none,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const Divider(
+                height: 2,
+              ),
+              Material(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: TextFormField(
+                    keyboardType: TextInputType.phone,
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      prefixIconConstraints:
+                          const BoxConstraints(minHeight: 50, minWidth: 50),
+                      prefixIcon: const Icon(Icons.phone),
+                      label: Text(
+                        'Phone Number (Landline)',
+                        style: TextStyle(
+                          color: Colors.grey.shade700,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const Divider(
+                height: 2,
+              ),
+              Material(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        flex: 0,
+                        child: CountryCodePicker(
+                          initialSelection: 'PK',
+                          showCountryOnly: false,
+                          showOnlyCountryWhenClosed: false,
+                          alignLeft: false,
+                        ),
+                      ),
+                      Expanded(
+                        flex: 2,
+                        child: TextFormField(
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "Please Provide Your Conatact Number";
+                            }
+                            return null;
+                          },
+                          keyboardType: TextInputType.phone,
+                          decoration: InputDecoration(
+                            label: RichText(
+                              text: TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: 'Whatsapp Contact Number',
+                                    style: TextStyle(
+                                      color: Colors.grey.shade700,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                  const TextSpan(
+                                    text: ' *',
+                                    style: TextStyle(
+                                      color: Colors.red,
+                                      fontFeatures: [
+                                        FontFeature.enable('sups'),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            border: InputBorder.none,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const Divider(
+                height: 2,
+              ),
+              Material(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: TextFormField(
+                    keyboardType: TextInputType.emailAddress,
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      prefixIconConstraints:
+                          const BoxConstraints(minHeight: 50, minWidth: 50),
+                      prefixIcon: const Icon(Icons.email),
+                      label: RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                              text: 'Email Address',
+                              style: TextStyle(
+                                color: Colors.grey.shade700,
+                                fontSize: 16,
+                              ),
+                            ),
+                            const TextSpan(
+                              text: ' *',
+                              style: TextStyle(
+                                color: Colors.red,
+                                fontFeatures: [
+                                  FontFeature.enable('sups'),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const Divider(
+                height: 2,
+              ),
+              Material(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: TextFormField(
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      prefixIconConstraints:
+                          const BoxConstraints(minHeight: 50, minWidth: 50),
+                      prefixIcon: const Icon(FontAwesome5.skype),
+                      label: RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                              text: 'Skype ID',
+                              style: TextStyle(
+                                color: Colors.grey.shade700,
+                                fontSize: 16,
+                              ),
+                            ),
+                            const TextSpan(
+                              text: ' *',
+                              style: TextStyle(
+                                color: Colors.red,
+                                fontFeatures: [
+                                  FontFeature.enable('sups'),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
@@ -837,28 +837,57 @@ class _MultiStepFormState extends State<MultiStepForm> {
               const Divider(
                 height: 2,
               ),
-              SizedBox(
-                height: 70,
-                child: Material(
-                  // color: Colors.white,
-                  borderRadius: const BorderRadius.only(
-                    bottomLeft: Radius.circular(16.0),
-                    bottomRight: Radius.circular(16.0),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: TextFormField(
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        prefixIconConstraints:
-                            const BoxConstraints(minHeight: 50, minWidth: 50),
-                        prefixIcon: const Icon(Icons.my_location),
-                        label: Text(
-                          'Current Based Country & Location',
-                          style: TextStyle(
-                            color: Colors.grey.shade700,
-                            fontSize: 16,
-                          ),
+              Material(
+                borderRadius: const BorderRadius.only(
+                  bottomLeft: Radius.circular(16.0),
+                  bottomRight: Radius.circular(16.0),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: TextFormField(
+                    controller: _currentLocationController,
+                    readOnly: true,
+                    onTap: () async {
+                      showDialog(
+                        barrierDismissible: false,
+                        context: context,
+                        builder: (BuildContext context) {
+                          return const AlertDialog(
+                            backgroundColor: Colors.transparent,
+                            elevation: 0,
+                            content: Center(
+                              child: CircularProgressIndicator(),
+                            ),
+                          );
+                        },
+                      );
+                      await Geolocator.getCurrentPosition(
+                              desiredAccuracy: LocationAccuracy.high)
+                          .then((value) async {
+                        await Geocoder2.getDataFromCoordinates(
+                          googleMapApiKey: kGoogleApiKey,
+                          latitude: value.latitude,
+                          longitude: value.longitude,
+                        ).then((address) {
+                          setState(() {
+                            _currentLocationController =
+                                TextEditingController(text: address.address);
+                          });
+                        }).whenComplete(() {
+                          Navigator.of(context).pop();
+                        });
+                      });
+                    },
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      prefixIconConstraints:
+                          const BoxConstraints(minHeight: 50, minWidth: 50),
+                      prefixIcon: const Icon(Icons.my_location),
+                      label: Text(
+                        'Current Based Country & Location',
+                        style: TextStyle(
+                          color: Colors.grey.shade700,
+                          fontSize: 16,
                         ),
                       ),
                     ),
@@ -901,93 +930,89 @@ class _MultiStepFormState extends State<MultiStepForm> {
                 ),
               ),
             ),
-            SizedBox(
-              child: Material(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: TextChipField(
-                    seprator: ",",
-                    spacing: 5,
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                      label: Text(
-                        'Mention Region / Location',
-                        style: TextStyle(
-                          color: Colors.grey.shade700,
-                          fontSize: 16,
-                        ),
+            Material(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: TextChipField(
+                  seprator: ",",
+                  spacing: 5,
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    label: Text(
+                      'Mention Region / Location',
+                      style: TextStyle(
+                        color: Colors.grey.shade700,
+                        fontSize: 16,
                       ),
                     ),
-                    onChanged: (val) {},
                   ),
+                  onChanged: (val) {},
                 ),
               ),
             ),
             const Divider(
               height: 2,
             ),
-            SizedBox(
-              child: Material(
-                borderRadius: const BorderRadius.only(
-                  bottomLeft: Radius.circular(16.0),
-                  bottomRight: Radius.circular(16.0),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 16.0, vertical: 8.0),
-                  child: DropdownButtonFormField(
-                    iconSize: 0.0,
-                    items: const [
-                      DropdownMenuItem(
-                        child: Text('Freelancer'),
-                        value: 'Freelancer',
-                      ),
-                      DropdownMenuItem(
-                        child: Text('Un-Employed'),
-                        value: 'Un-Employed',
-                      ),
-                      DropdownMenuItem(
-                        child: Text('Available Full Time'),
-                        value: 'Available Full Time',
-                      ),
-                      DropdownMenuItem(
-                        child: Text('Employed But Available Part Time'),
-                        value: 'Employed But Available Part Time',
-                      ),
-                    ],
-                    onChanged: (v) {},
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                      label: RichText(
-                        text: TextSpan(
-                          children: [
-                            TextSpan(
-                              text: 'Employment Status',
-                              style: TextStyle(
-                                color: Colors.grey.shade700,
-                                fontSize: 16,
-                              ),
+            Material(
+              borderRadius: const BorderRadius.only(
+                bottomLeft: Radius.circular(16.0),
+                bottomRight: Radius.circular(16.0),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 16.0, vertical: 8.0),
+                child: DropdownButtonFormField(
+                  iconSize: 0.0,
+                  items: const [
+                    DropdownMenuItem(
+                      child: Text('Freelancer'),
+                      value: 'Freelancer',
+                    ),
+                    DropdownMenuItem(
+                      child: Text('Un-Employed'),
+                      value: 'Un-Employed',
+                    ),
+                    DropdownMenuItem(
+                      child: Text('Available Full Time'),
+                      value: 'Available Full Time',
+                    ),
+                    DropdownMenuItem(
+                      child: Text('Employed But Available Part Time'),
+                      value: 'Employed But Available Part Time',
+                    ),
+                  ],
+                  onChanged: (v) {},
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    label: RichText(
+                      text: TextSpan(
+                        children: [
+                          TextSpan(
+                            text: 'Employment Status',
+                            style: TextStyle(
+                              color: Colors.grey.shade700,
+                              fontSize: 16,
                             ),
-                            const TextSpan(
-                              text: ' *',
-                              style: TextStyle(
-                                color: Colors.red,
-                                fontFeatures: [
-                                  FontFeature.enable('sups'),
-                                ],
-                              ),
+                          ),
+                          const TextSpan(
+                            text: ' *',
+                            style: TextStyle(
+                              color: Colors.red,
+                              fontFeatures: [
+                                FontFeature.enable('sups'),
+                              ],
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ),
-                    validator: (String? v) {
-                      if (v!.isEmpty) {
-                        return 'please select employment status';
-                      }
-                      return null;
-                    },
                   ),
+                  validator: (String? v) {
+                    if (v!.isEmpty) {
+                      return 'please select employment status';
+                    }
+                    return null;
+                  },
                 ),
               ),
             ),
@@ -1163,6 +1188,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
     );
 
     return Scaffold(
+      key: homeScaffoldKey,
       body: SafeArea(
         child: stepper,
       ),
