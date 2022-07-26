@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:country_code_picker/country_code_picker.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_places/flutter_google_places.dart';
@@ -10,6 +11,7 @@ import 'package:google_api_headers/google_api_headers.dart';
 import 'package:google_maps_webservice/places.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
 import 'package:sv_rms_mobile/main.dart';
+import 'package:sv_rms_mobile/services/base_services.dart';
 import 'package:sv_rms_mobile/ui/authentication/profile_setup/multi_step_form.dart';
 
 class SignupScreen extends StatefulWidget {
@@ -110,7 +112,8 @@ class _SignupScreenState extends State<SignupScreen> {
                                           onChanged: (value) {
                                             prefs!
                                                 .setString('first_name', value);
-                                            registrationForm['first_name'] = value;
+                                            registrationForm['first_name'] =
+                                                value;
                                           },
                                           keyboardType: TextInputType.text,
                                           decoration: InputDecoration(
@@ -157,7 +160,8 @@ class _SignupScreenState extends State<SignupScreen> {
                                           onChanged: (value) {
                                             prefs!
                                                 .setString('last_name', value);
-                                            registrationForm['last_name'] = value;
+                                            registrationForm['last_name'] =
+                                                value;
                                           },
                                           validator: (value) {
                                             if (value!.isEmpty) {
@@ -572,9 +576,15 @@ class _SignupScreenState extends State<SignupScreen> {
           Padding(
             padding: const EdgeInsets.all(10.0),
             child: ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 if (_formkey.currentState!.validate()) {
-                  
+                  registrationForm['auth_token'] = authToken;
+
+                  try {
+                    Response response = await Dio().post('https://google.com');
+                    print(response.statusCode); // 500
+                    print(response.data); // Contains a Dio Error object
+                  } on DioError {}
                 }
               },
               style: ButtonStyle(
