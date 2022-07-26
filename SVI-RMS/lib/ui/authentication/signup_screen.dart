@@ -528,13 +528,16 @@ class _SignupScreenState extends State<SignupScreen> {
                               onConfirm: (values) {
                                 setState(() {
                                   _selectedFields = values;
-                                  registrationForm['checkbox_4'] = values;
+                                  registrationForm['checkboxes'] =
+                                      _selectedFields;
                                 });
                               },
                               chipDisplay: MultiSelectChipDisplay(
                                 onTap: (item) {
                                   setState(() {
                                     _selectedFields.remove(item);
+                                    registrationForm['checkboxes'] =
+                                        _selectedFields;
                                   });
                                 },
                               ),
@@ -579,12 +582,18 @@ class _SignupScreenState extends State<SignupScreen> {
               onPressed: () async {
                 if (_formkey.currentState!.validate()) {
                   registrationForm['auth_token'] = authToken;
-
-                  try {
-                    Response response = await Dio().post('https://google.com');
-                    print(response.statusCode); // 500
-                    print(response.data); // Contains a Dio Error object
-                  } on DioError {}
+                  print(registrationForm);
+                  // try {
+                  //   await Dio()
+                  //       .post(baseURL + 'process_register.php',
+                  //           data: registrationForm)
+                  //       .then((response) {
+                  //     print(response.statusCode); // 500
+                  //     print(response.data);
+                  //   }); // Contains a Dio Error object
+                  // } on DioError catch (e) {
+                  //   print(e);
+                  // }
                 }
               },
               style: ButtonStyle(
