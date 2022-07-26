@@ -1,7 +1,8 @@
+import 'dart:convert';
 import 'dart:ui';
 
 import 'package:country_code_picker/country_code_picker.dart';
-import 'package:dio/dio.dart';
+import 'package:http/http.dart' as http;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_places/flutter_google_places.dart';
@@ -266,7 +267,8 @@ class _SignupScreenState extends State<SignupScreen> {
                                     onChanged: (value) {
                                       prefs!.setString('primary_country_code',
                                           value.toString());
-                                      registrationForm['country_code'] = value;
+                                      registrationForm['country_code'] =
+                                          value.toString();
                                     },
                                     initialSelection: 'PK',
                                     showCountryOnly: false,
@@ -286,7 +288,8 @@ class _SignupScreenState extends State<SignupScreen> {
                                     onChanged: (value) {
                                       prefs!.setString(
                                           'contact_number_primary', value);
-                                      registrationForm['phone'] = value;
+                                      registrationForm['phone'] =
+                                          value.toString();
                                     },
                                     keyboardType: TextInputType.phone,
                                     decoration: InputDecoration(
@@ -432,11 +435,13 @@ class _SignupScreenState extends State<SignupScreen> {
                                   ).then((value) {
                                     setState(() {
                                       registrationForm['city_country_lat'] =
-                                          value.latitude;
+                                          value.latitude.toString();
                                       registrationForm['city_country_lng'] =
-                                          value.longitude;
+                                          value.longitude.toString();
                                       registrationForm['country'] =
-                                          value.country.toString();
+                                          value.city.toString() +
+                                              ', ' +
+                                              value.country.toString();
                                       prefs!.setString('city_country_lat',
                                           geometry.location.lat.toString());
                                       prefs!.setString('city_country_lng',
@@ -529,15 +534,13 @@ class _SignupScreenState extends State<SignupScreen> {
                                 setState(() {
                                   _selectedFields = values;
                                   registrationForm['checkboxes'] =
-                                      _selectedFields;
+                                      _selectedFields.join(',');
                                 });
                               },
                               chipDisplay: MultiSelectChipDisplay(
                                 onTap: (item) {
                                   setState(() {
                                     _selectedFields.remove(item);
-                                    registrationForm['checkboxes'] =
-                                        _selectedFields;
                                   });
                                 },
                               ),
@@ -582,18 +585,17 @@ class _SignupScreenState extends State<SignupScreen> {
               onPressed: () async {
                 if (_formkey.currentState!.validate()) {
                   registrationForm['auth_token'] = authToken;
-                  print(registrationForm);
-                  // try {
-                  //   await Dio()
-                  //       .post(baseURL + 'process_register.php',
-                  //           data: registrationForm)
-                  //       .then((response) {
-                  //     print(response.statusCode); // 500
-                  //     print(response.data);
-                  //   }); // Contains a Dio Error object
-                  // } on DioError catch (e) {
-                  //   print(e);
-                  // }
+                  print(jsonEncode(registrationForm));
+                  try {
+                    await http
+                        .post(Uri.parse("${baseURL}process_register.php"),
+                            body: registrationForm)
+                        .then((response) {
+                      print(response.body);
+                    }); // Contains a Dio Error object
+                  } catch (e) {
+                    print(e.toString());
+                  }
                 }
               },
               style: ButtonStyle(
