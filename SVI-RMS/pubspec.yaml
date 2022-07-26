@@ -63,9 +63,10 @@ dependencies:
   intl: ^0.17.0
   mime:
   image_picker: ^0.8.4+10
-  cool_stepper: ^1.2.1
   fluttericon: ^2.0.0
   text_chip_field: ^0.0.5
+  cool_stepper_reloaded: ^3.2.5
+  multi_select_flutter: ^4.1.2
   
   
 

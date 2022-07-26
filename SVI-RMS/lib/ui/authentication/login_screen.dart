@@ -32,10 +32,11 @@ class _LoginScreenState extends State<LoginScreen> {
           children: [
             const SizedBox(height: 50),
             const Center(
-                child: Text(
-              "Log In",
-              style: TextStyle(fontSize: 18),
-            )),
+              child: Text(
+                "Log In",
+                style: TextStyle(fontSize: 18),
+              ),
+            ),
             const Text("Enter your login details to\n    access your account",
                 style: TextStyle(fontSize: 16)),
             const SizedBox(height: 110),
@@ -44,7 +45,6 @@ class _LoginScreenState extends State<LoginScreen> {
               child: SizedBox(
                 height: 70,
                 child: Material(
-                  //color: Colors.white,
                   borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(16.0),
                       topRight: Radius.circular(16.0)),
@@ -73,7 +73,6 @@ class _LoginScreenState extends State<LoginScreen> {
               child: SizedBox(
                 height: 70,
                 child: Material(
-                  // color: Colors.white,
                   borderRadius: const BorderRadius.only(
                     bottomLeft: Radius.circular(16.0),
                     bottomRight: Radius.circular(16.0),
@@ -98,61 +97,48 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
             const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 28.0),
-                    child: CupertinoButton.filled(
-                      child: const Text("SIGN-IN"),
-                      onPressed: () {
-                        // Navigator.pushReplacementNamed(
-                        //   context,
-                        //   HomeScreen.route,
-                        // );
-                        // login(
-                        //   emailController.text,
-                        //   passwordController.text,
-                        // ).then((value) {
-                        //   Navigator.pushReplacementNamed(
-                        //     context,
-                        //     HomeScreen.route,
-                        //   );
-                        // }).catchError((err) {
-                        //   if (kDebugMode) {
-                        //     print(err);
-                        //   }
-                        // });
-                        showModalBottomSheet(
-                          isScrollControlled: true,
-                          isDismissible: false,
-                          backgroundColor: Colors.transparent,
-                          context: context,
-                          builder: (BuildContext context) => Container(
-                            height: MediaQuery.of(context).size.height * 0.9,
-                            clipBehavior: Clip.hardEdge,
-                            decoration: const BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(25.0),
-                                topRight: Radius.circular(25.0),
-                              ),
-                            ),
-                            child: const MultiStepForm(),
-                          ),
-                        );
-                      },
+            Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 25.0, vertical: 8.0),
+              child: ElevatedButton(
+                onPressed: () {
+                  showModalBottomSheet(
+                    isScrollControlled: true,
+                    isDismissible: false,
+                    backgroundColor: Colors.transparent,
+                    context: context,
+                    builder: (BuildContext context) => Container(
+                      height: MediaQuery.of(context).size.height * 0.9,
+                      clipBehavior: Clip.hardEdge,
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(25.0),
+                          topRight: Radius.circular(25.0),
+                        ),
+                      ),
+                      child: const MultiStepForm(),
                     ),
+                  );
+                },
+                style: ButtonStyle(
+                  foregroundColor: MaterialStateProperty.all(Colors.white),
+                  padding: MaterialStateProperty.all(
+                    const EdgeInsets.all(15),
+                  ),
+                  minimumSize: MaterialStateProperty.all(
+                    Size(MediaQuery.of(context).size.width, 50),
                   ),
                 ),
-              ],
+                child: const Text('Sign In'),
+              ),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text("Dont Have An Account?"),
+                const Text("Don't have an Account?"),
                 CupertinoButton(
-                  child: const Text("Sign-Up"),
+                  child: const Text("Sign Up"),
                   onPressed: () {
                     Navigator.pushNamed(context, SignupScreen.route);
                   },

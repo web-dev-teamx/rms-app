@@ -169,13 +169,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.0.1"
-  cool_stepper:
+  cool_stepper_reloaded:
     dependency: "direct main"
     description:
-      name: cool_stepper
+      name: cool_stepper_reloaded
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.2.1"
+    version: "3.2.5"
   country_code_picker:
     dependency: "direct main"
     description:
@@ -590,6 +590,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.0"
+  multi_select_flutter:
+    dependency: "direct main"
+    description:
+      name: multi_select_flutter
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "4.1.2"
   nested:
     dependency: transitive
     description:

@@ -2,7 +2,7 @@
 
 import 'dart:io';
 import 'dart:ui';
-import 'package:cool_stepper/cool_stepper.dart';
+import 'package:cool_stepper_reloaded/cool_stepper_reloaded.dart';
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_places/flutter_google_places.dart';
