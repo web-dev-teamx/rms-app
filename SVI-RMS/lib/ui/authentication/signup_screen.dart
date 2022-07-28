@@ -579,13 +579,30 @@ class _SignupScreenState extends State<SignupScreen> {
             child: ElevatedButton(
               onPressed: () async {
                 if (_formkey.currentState!.validate()) {
+                  showDialog(
+                    barrierDismissible: false,
+                    context: context,
+                    builder: (BuildContext context) {
+                      return const AlertDialog(
+                        backgroundColor: Colors.transparent,
+                        elevation: 0,
+                        content: Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      );
+                    },
+                  );
                   registrationForm['auth_token'] = authToken;
                   try {
                     await http
                         .post(Uri.parse("${baseURL}process_register.php"),
                             body: registrationForm)
                         .then((response) {
-                    }); 
+                      if (jsonDecode(response.body)['success'] == 'OK') {
+                        Navigator.of(context).pop();
+                        Navigator.of(context).pop();
+                      }
+                    });
                   } catch (e) {
                     print(e.toString());
                   }
