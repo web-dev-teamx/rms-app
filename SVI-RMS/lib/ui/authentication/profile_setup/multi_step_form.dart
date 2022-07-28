@@ -204,6 +204,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                     },
                     keyboardType: TextInputType.text,
                     decoration: InputDecoration(
+                      isDense: true,
                       label: RichText(
                         text: TextSpan(
                           children: [
@@ -245,6 +246,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                     },
                     keyboardType: TextInputType.text,
                     decoration: InputDecoration(
+                      isDense: true,
                       border: InputBorder.none,
                       label: Text(
                         'Middle Name',
@@ -282,6 +284,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                     },
                     keyboardType: TextInputType.text,
                     decoration: InputDecoration(
+                      isDense: true,
                       border: InputBorder.none,
                       label: RichText(
                         text: TextSpan(
@@ -334,6 +337,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                     },
                     keyboardType: TextInputType.text,
                     decoration: InputDecoration(
+                      isDense: true,
                       border: InputBorder.none,
                       label: RichText(
                         text: TextSpan(
@@ -383,6 +387,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                     },
                     keyboardType: TextInputType.datetime,
                     decoration: InputDecoration(
+                      isDense: true,
                       border: InputBorder.none,
                       label: RichText(
                         text: TextSpan(
@@ -433,6 +438,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                     },
                     keyboardType: TextInputType.number,
                     decoration: InputDecoration(
+                      isDense: true,
                       border: InputBorder.none,
                       prefixIconConstraints:
                           const BoxConstraints(minHeight: 50, minWidth: 50),
@@ -479,7 +485,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                           context: context,
                           apiKey: kGoogleApiKey,
                           mode: Mode.overlay,
-                          types: [],
+                          types: ['administrative_area_level_3'],
                           strictbounds: false,
                           components: [
                             Component(Component.country, 'pk'),
@@ -502,36 +508,38 @@ class _MultiStepFormState extends State<MultiStepForm> {
                         );
                         String placeid = place.placeId ?? "0";
                         final detail = await plist.getDetailsByPlaceId(placeid);
-                        final geometry = detail.result.geometry!;
-                        await Geocoder2.getDataFromCoordinates(
-                          googleMapApiKey: kGoogleApiKey,
-                          latitude: geometry.location.lat,
-                          longitude: geometry.location.lng,
-                        ).then((value) {
-                          setState(() {
-                            prefs!.setString('city_country_lat',
-                                geometry.location.lat.toString());
-                            prefs!.setString('city_country_lng',
-                                geometry.location.lng.toString());
-                            prefs!.setString(
-                                'city_country',
-                                value.city.toString() +
-                                    ', ' +
-                                    value.country.toString());
-                            prefs!.setString('city', value.city.toString());
-                            prefs!
-                                .setString('country', value.country.toString());
-                            _cityController =
-                                TextEditingController(text: value.city);
-                            _counrtyController =
-                                TextEditingController(text: value.country);
-                            _cityCountryController = TextEditingController(
-                                text: value.city + ', ' + value.country);
-                          });
+
+                        final geometry = detail.result.geometry!.location;
+                        final cityCountry = detail.result.formattedAddress
+                            .toString()
+                            .split(',');
+                        setState(() {
+                          prefs!.setString(
+                              'city_country_lat', geometry.lat.toString());
+                          prefs!.setString(
+                              'city_country_lng', geometry.lng.toString());
+                          prefs!.setString(
+                              'city_country',
+                              cityCountry.first.toString() +
+                                  ', ' +
+                                  cityCountry.last.toString());
+                          prefs!
+                              .setString('city', cityCountry.first.toString());
+                          prefs!.setString(
+                              'country', cityCountry.last.toString());
+                          _cityController = TextEditingController(
+                              text: cityCountry.first.toString());
+                          _counrtyController = TextEditingController(
+                              text: cityCountry.last.toString());
+                          _cityCountryController = TextEditingController(
+                              text: cityCountry.first.toString() +
+                                  ', ' +
+                                  cityCountry.last.toString());
                         });
                       }
                     },
                     decoration: InputDecoration(
+                      isDense: true,
                       border: InputBorder.none,
                       prefixIconConstraints:
                           const BoxConstraints(minHeight: 50, minWidth: 50),
@@ -571,6 +579,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                     controller: _cityCountryController,
                     keyboardType: TextInputType.text,
                     decoration: InputDecoration(
+                      isDense: true,
                       border: InputBorder.none,
                       prefixIconConstraints:
                           const BoxConstraints(minHeight: 50, minWidth: 50),
@@ -614,6 +623,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                       prefs!.setString('house_number', value);
                     },
                     decoration: InputDecoration(
+                      isDense: true,
                       border: InputBorder.none,
                       prefixIconConstraints:
                           const BoxConstraints(minHeight: 50, minWidth: 50),
@@ -649,6 +659,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                     controller: _cityController,
                     keyboardType: TextInputType.text,
                     decoration: InputDecoration(
+                      isDense: true,
                       border: InputBorder.none,
                       prefixIconConstraints:
                           const BoxConstraints(minHeight: 50, minWidth: 50),
@@ -692,6 +703,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                     },
                     keyboardType: TextInputType.text,
                     decoration: InputDecoration(
+                      isDense: true,
                       prefixIconConstraints:
                           const BoxConstraints(minHeight: 50, minWidth: 50),
                       prefixIcon: const Icon(
@@ -730,6 +742,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                     controller: _counrtyController,
                     keyboardType: TextInputType.text,
                     decoration: InputDecoration(
+                      isDense: true,
                       prefixIconConstraints:
                           const BoxConstraints(minHeight: 50, minWidth: 50),
                       prefixIcon: const Icon(MfgLabs.globe),
@@ -797,6 +810,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                           },
                           keyboardType: TextInputType.phone,
                           decoration: InputDecoration(
+                            isDense: true,
                             label: RichText(
                               text: TextSpan(
                                 children: [
@@ -864,6 +878,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                             prefs!.setString('contact_number_secondary', value);
                           },
                           decoration: InputDecoration(
+                            isDense: true,
                             label: RichText(
                               text: TextSpan(
                                 children: [
@@ -907,6 +922,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                     },
                     keyboardType: TextInputType.phone,
                     decoration: InputDecoration(
+                      isDense: true,
                       border: InputBorder.none,
                       prefixIconConstraints:
                           const BoxConstraints(minHeight: 50, minWidth: 50),
@@ -959,6 +975,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                           },
                           keyboardType: TextInputType.phone,
                           decoration: InputDecoration(
+                            isDense: true,
                             label: RichText(
                               text: TextSpan(
                                 children: [
@@ -1010,6 +1027,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                     keyboardType: TextInputType.emailAddress,
                     decoration: InputDecoration(
                       border: InputBorder.none,
+                      isDense: true,
                       prefixIconConstraints:
                           const BoxConstraints(minHeight: 50, minWidth: 50),
                       prefixIcon: const Icon(Icons.email),
@@ -1058,6 +1076,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                       prefs!.setString('skypeid', value);
                     },
                     decoration: InputDecoration(
+                      isDense: true,
                       border: InputBorder.none,
                       prefixIconConstraints:
                           const BoxConstraints(minHeight: 50, minWidth: 50),
@@ -1436,12 +1455,66 @@ class _MultiStepFormState extends State<MultiStepForm> {
     ];
 
     final stepper = CoolStepper(
+      hasRoundedCorner: false,
       showErrorSnackbar: true,
       onCompleted: () {},
+      contentPadding: const EdgeInsets.all(15),
       steps: steps,
       config: CoolStepperConfig(
         backText: 'Back',
+        nextButton: Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Card(
+            color: AppTheme.primaryColor,
+            child: const SizedBox(
+              width: 75,
+              child: Padding(
+                padding: EdgeInsets.all(10.0),
+                child: Center(
+                    child: Text(
+                  'Next',
+                  style: TextStyle(color: Colors.white),
+                )),
+              ),
+            ),
+          ),
+        ),
+        backButton: Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Card(
+            color: AppTheme.primaryColor,
+            child: const SizedBox(
+              width: 75,
+              child: Padding(
+                padding: EdgeInsets.all(10.0),
+                child: Center(
+                    child: Text(
+                  'Back',
+                  style: TextStyle(color: Colors.white),
+                )),
+              ),
+            ),
+          ),
+        ),
+        finishButton: Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Card(
+            color: AppTheme.primaryColor,
+            child: const SizedBox(
+              width: 75,
+              child: Padding(
+                padding: EdgeInsets.all(10.0),
+                child: Center(
+                    child: Text(
+                  'Proceed',
+                  style: TextStyle(color: Colors.white),
+                )),
+              ),
+            ),
+          ),
+        ),
         headerColor: AppTheme.primaryColor,
+        stepColor: Colors.white,
         titleTextStyle: const TextStyle(
           color: Colors.white,
           fontWeight: FontWeight.bold,
@@ -1465,26 +1538,28 @@ class _MultiStepFormState extends State<MultiStepForm> {
   List<Widget> getLanguages() {
     List<Widget> friendsTextFields = [];
     for (int i = 0; i < languageList.length; i++) {
-      friendsTextFields.add(Material(
-        child: Row(
-          children: [
-            Flexible(
-              flex: 2,
-              child: LanguagesFields(index: i),
-            ),
-            Flexible(
-              child: LevelFields(index: i),
-            ),
-            const SizedBox(
-              width: 16,
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: _addRemoveButton(i == languageList.length - 1, i),
-            ),
-          ],
+      friendsTextFields.add(
+        Material(
+          child: Row(
+            children: [
+              Flexible(
+                flex: 2,
+                child: LanguagesFields(index: i),
+              ),
+              Flexible(
+                child: LevelFields(index: i),
+              ),
+              const SizedBox(
+                width: 16,
+              ),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: _addRemoveButton(i == languageList.length - 1, i),
+              ),
+            ],
+          ),
         ),
-      ));
+      );
     }
     return friendsTextFields;
   }

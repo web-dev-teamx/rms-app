@@ -13,6 +13,7 @@ import 'package:google_maps_webservice/places.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
 import 'package:sv_rms_mobile/main.dart';
 import 'package:sv_rms_mobile/services/base_services.dart';
+import 'package:sv_rms_mobile/services/local_notofication_services.dart';
 import 'package:sv_rms_mobile/ui/authentication/profile_setup/multi_step_form.dart';
 
 class SignupScreen extends StatefulWidget {
@@ -23,6 +24,13 @@ class SignupScreen extends StatefulWidget {
 }
 
 class _SignupScreenState extends State<SignupScreen> {
+  late final localNotificationService = LocalNotificationService();
+  @override
+  void initState() {
+    localNotificationService.initilize();
+    super.initState();
+  }
+
   final _formkey = GlobalKey<FormState>();
   List _selectedFields = [];
   bool isNotificationOn = false;
@@ -395,7 +403,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                     context: context,
                                     apiKey: kGoogleApiKey,
                                     mode: Mode.overlay,
-                                    types: [],
+                                    types: ['administrative_area_level_3'],
                                     strictbounds: false,
                                     components: [
                                       Component(Component.country,
@@ -442,19 +450,6 @@ class _SignupScreenState extends State<SignupScreen> {
                                           value.city.toString() +
                                               ', ' +
                                               value.country.toString();
-                                      prefs!.setString('city_country_lat',
-                                          geometry.location.lat.toString());
-                                      prefs!.setString('city_country_lng',
-                                          geometry.location.lng.toString());
-                                      prefs!.setString(
-                                          'city_country',
-                                          value.city.toString() +
-                                              ', ' +
-                                              value.country.toString());
-                                      prefs!.setString(
-                                          'city', value.city.toString());
-                                      prefs!.setString(
-                                          'country', value.country.toString());
                                     });
                                   });
                                 }
@@ -585,14 +580,12 @@ class _SignupScreenState extends State<SignupScreen> {
               onPressed: () async {
                 if (_formkey.currentState!.validate()) {
                   registrationForm['auth_token'] = authToken;
-                  print(jsonEncode(registrationForm));
                   try {
                     await http
                         .post(Uri.parse("${baseURL}process_register.php"),
                             body: registrationForm)
                         .then((response) {
-                      print(response.body);
-                    }); // Contains a Dio Error object
+                    }); 
                   } catch (e) {
                     print(e.toString());
                   }
