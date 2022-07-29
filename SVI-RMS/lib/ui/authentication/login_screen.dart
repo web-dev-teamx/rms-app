@@ -1,7 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:sv_rms_mobile/services/base_services.dart';
 import 'package:sv_rms_mobile/ui/authentication/profile_setup/multi_step_form.dart';
 
+import 'package:http/http.dart' as http;
 import 'signup_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -13,15 +18,8 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  TextEditingController emailController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
-
-  @override
-  void initState() {
-    emailController.text = 'mkashifali541@gmail.com';
-    passwordController.text = 'asdf1234';
-    super.initState();
-  }
+  final _formkey = GlobalKey<FormState>();
+  Map<String, dynamic> loginForm = {};
 
   @override
   Widget build(BuildContext context) {
@@ -40,60 +38,71 @@ class _LoginScreenState extends State<LoginScreen> {
             const Text("Enter your login details to\n    access your account",
                 style: TextStyle(fontSize: 16)),
             const SizedBox(height: 110),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0),
-              child: SizedBox(
-                height: 70,
-                child: Material(
-                  borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(16.0),
-                      topRight: Radius.circular(16.0)),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16.0, vertical: 8.0),
-                    child: TextField(
-                      controller: emailController,
-                      decoration: const InputDecoration(
-                        hintText: "Your Email Here",
-                        border: InputBorder.none,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 24.0),
-              child: Divider(
-                height: 2,
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0),
-              child: SizedBox(
-                height: 70,
-                child: Material(
-                  borderRadius: const BorderRadius.only(
-                    bottomLeft: Radius.circular(16.0),
-                    bottomRight: Radius.circular(16.0),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16.0, vertical: 8.0),
-                    child: TextField(
-                      controller: passwordController,
-                      obscureText: true,
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        hintText: "Your Pass Here",
-                        suffixIcon: IconButton(
-                          onPressed: () {},
-                          icon: const Icon(Icons.lock),
+            Form(
+              key: _formkey,
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                    child: SizedBox(
+                      height: 70,
+                      child: Material(
+                        borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(16.0),
+                            topRight: Radius.circular(16.0)),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16.0, vertical: 8.0),
+                          child: TextField(
+                            onChanged: (value) {
+                              loginForm['username'] = value;
+                            },
+                            decoration: const InputDecoration(
+                              hintText: "Your Email Here",
+                              border: InputBorder.none,
+                            ),
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 24.0),
+                    child: Divider(
+                      height: 2,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                    child: SizedBox(
+                      height: 70,
+                      child: Material(
+                        borderRadius: const BorderRadius.only(
+                          bottomLeft: Radius.circular(16.0),
+                          bottomRight: Radius.circular(16.0),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16.0, vertical: 8.0),
+                          child: TextField(
+                            obscureText: true,
+                            onChanged: (value) {
+                              loginForm['password'] = value;
+                            },
+                            decoration: InputDecoration(
+                              border: InputBorder.none,
+                              hintText: "Your Pass Here",
+                              suffixIcon: IconButton(
+                                onPressed: () {},
+                                icon: const Icon(Icons.lock),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
             const SizedBox(height: 16),
@@ -101,27 +110,59 @@ class _LoginScreenState extends State<LoginScreen> {
               padding:
                   const EdgeInsets.symmetric(horizontal: 25.0, vertical: 8.0),
               child: ElevatedButton(
-                onPressed: () {
-                  
-
-                  showModalBottomSheet(
-                    isScrollControlled: true,
-                    isDismissible: false,
-                    backgroundColor: Colors.transparent,
-                    context: context,
-                    builder: (BuildContext context) => Container(
-                      height: MediaQuery.of(context).size.height * 0.9,
-                      clipBehavior: Clip.hardEdge,
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(25.0),
-                          topRight: Radius.circular(25.0),
-                        ),
-                      ),
-                      child: const MultiStepForm(),
-                    ),
-                  );
+                onPressed: () async {
+                  if (_formkey.currentState!.validate()) {
+                    showDialog(
+                      barrierDismissible: false,
+                      context: context,
+                      builder: (BuildContext context) {
+                        return const AlertDialog(
+                          backgroundColor: Colors.transparent,
+                          elevation: 0,
+                          content: Center(
+                            child: CircularProgressIndicator(),
+                          ),
+                        );
+                      },
+                    );
+                    loginForm['auth_token'] = authToken;
+                    try {
+                      await http
+                          .post(Uri.parse("${baseURL}process_login.php"),
+                              body: loginForm)
+                          .then((response) {
+                        if (jsonDecode(response.body)['code'] == 200) {
+                          if (jsonDecode(response.body)['user_detail']
+                                  ['approved'] ==
+                              '0') {
+                            showModalBottomSheet(
+                              isScrollControlled: true,
+                              isDismissible: false,
+                              backgroundColor: Colors.transparent,
+                              context: context,
+                              builder: (BuildContext context) => Container(
+                                height:
+                                    MediaQuery.of(context).size.height * 0.9,
+                                clipBehavior: Clip.hardEdge,
+                                decoration: const BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.only(
+                                    topLeft: Radius.circular(25.0),
+                                    topRight: Radius.circular(25.0),
+                                  ),
+                                ),
+                                child: const MultiStepForm(),
+                              ),
+                            );
+                          }
+                        } else {}
+                      });
+                    } catch (e) {
+                      if (kDebugMode) {
+                        print(e.toString());
+                      }
+                    }
+                  }
                 },
                 style: ButtonStyle(
                   foregroundColor: MaterialStateProperty.all(Colors.white),

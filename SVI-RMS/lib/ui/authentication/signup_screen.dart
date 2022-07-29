@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:ui';
 
 import 'package:country_code_picker/country_code_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -49,10 +50,11 @@ class _SignupScreenState extends State<SignupScreen> {
             children: [
               const SizedBox(height: 25),
               const Center(
-                  child: Text(
-                "New Account",
-                style: TextStyle(fontSize: 18),
-              )),
+                child: Text(
+                  "New Account",
+                  style: TextStyle(fontSize: 18),
+                ),
+              ),
               const Text("Join Our Engineer Network",
                   style: TextStyle(fontSize: 16)),
               const SizedBox(height: 25),
@@ -102,7 +104,7 @@ class _SignupScreenState extends State<SignupScreen> {
                         const Divider(
                           height: 2,
                         ),
-                        vendorType != 'Company'
+                        vendorType != '3'
                             ? Row(
                                 children: [
                                   Flexible(
@@ -598,13 +600,15 @@ class _SignupScreenState extends State<SignupScreen> {
                         .post(Uri.parse("${baseURL}process_register.php"),
                             body: registrationForm)
                         .then((response) {
-                      if (jsonDecode(response.body)['success'] == 'OK') {
+                      if (jsonDecode(response.body)['code'] == 200) {
                         Navigator.of(context).pop();
                         Navigator.of(context).pop();
                       }
                     });
                   } catch (e) {
-                    print(e.toString());
+                    if (kDebugMode) {
+                      print(e.toString());
+                    }
                   }
                 }
               },
