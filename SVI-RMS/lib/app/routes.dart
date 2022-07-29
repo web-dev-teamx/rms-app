@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sv_rms_mobile/ui/add_technician/add_technician_screen.dart';
 import 'package:sv_rms_mobile/ui/authentication/login_screen.dart';
+import 'package:sv_rms_mobile/ui/authentication/profile_setup/demo.dart';
 import 'package:sv_rms_mobile/ui/authentication/profile_setup/multi_step_form.dart';
 import 'package:sv_rms_mobile/ui/authentication/signup_screen.dart';
 import 'package:sv_rms_mobile/ui/complaints/complaints_screen.dart';
@@ -22,6 +23,10 @@ Route<dynamic>? generateRoute(RouteSettings settings) {
     case SplashScreen.route:
       return MaterialPageRoute(
         builder: (context) => const SplashScreen(),
+      );
+    case Demo.route:
+      return MaterialPageRoute(
+        builder: (context) => const Demo(),
       );
     case LoginScreen.route:
       return MaterialPageRoute(

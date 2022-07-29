@@ -3,10 +3,12 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:sv_rms_mobile/main.dart';
 import 'package:sv_rms_mobile/services/base_services.dart';
 import 'package:sv_rms_mobile/ui/authentication/profile_setup/multi_step_form.dart';
 
 import 'package:http/http.dart' as http;
+import 'package:sv_rms_mobile/utils/app_theme.dart';
 import 'signup_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -132,9 +134,33 @@ class _LoginScreenState extends State<LoginScreen> {
                               body: loginForm)
                           .then((response) {
                         if (jsonDecode(response.body)['code'] == 200) {
-                          if (jsonDecode(response.body)['user_detail']
-                                  ['approved'] ==
-                              '0') {
+                          Navigator.of(context).pop();
+                          var userDetails =
+                              jsonDecode(response.body)['user_detail'];
+
+                          if (userDetails['approved'] == '0') {
+                            prefs?.setString(
+                                'city_country_lat', userDetails['lat']);
+                            prefs?.setString(
+                                'city_country_lng', userDetails['lng']);
+                            prefs?.setString('city', userDetails['city']);
+                            prefs?.setString('country', userDetails['country']);
+                            prefs?.setString(
+                                'city_country',
+                                userDetails['city'] +
+                                    ', ' +
+                                    userDetails['country']);
+                            prefs?.setString('contact_number_primary',
+                                userDetails['contact_number_primary']);
+                            prefs?.setString(
+                                'email_address', userDetails['email_address']);
+                            prefs?.setString(
+                                'first_name', userDetails['first_name']);
+                            prefs?.setString(
+                                'last_name', userDetails['last_name']);
+                            prefs?.setString(
+                                'vendor_type', userDetails['vendor_type_id']);
+                            prefs?.setInt('user_id', int.parse(userDetails['id']));
                             showModalBottomSheet(
                               isScrollControlled: true,
                               isDismissible: false,
@@ -155,7 +181,16 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             );
                           }
-                        } else {}
+                        } else if (jsonDecode(response.body)['code'] == 1) {
+                          Navigator.of(context).pop();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: const Text('Invaild user details'),
+                              backgroundColor: AppTheme.primaryColor,
+                              behavior: SnackBarBehavior.floating,
+                            ),
+                          );
+                        }
                       });
                     } catch (e) {
                       if (kDebugMode) {

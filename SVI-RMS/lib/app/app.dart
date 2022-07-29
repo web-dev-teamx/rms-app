@@ -4,7 +4,7 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:sv_rms_mobile/services/client/http_client_provider.dart';
-import 'package:sv_rms_mobile/ui/authentication/login_screen.dart';
+import 'package:sv_rms_mobile/ui/authentication/profile_setup/demo.dart';
 import 'package:sv_rms_mobile/utils/app_theme.dart';
 
 import 'config_store.dart';
@@ -44,7 +44,7 @@ class _RmsAppState extends State<RmsApp> {
           navigatorKey: navigatorKey,
           builder: BotToastInit(),
           navigatorObservers: [BotToastNavigatorObserver()],
-          initialRoute: LoginScreen.route,
+          initialRoute: Demo.route,
           onGenerateRoute: generateRoute,
           // initialRoute: SplashScreen.route,
           // localizationsDelegates: const [

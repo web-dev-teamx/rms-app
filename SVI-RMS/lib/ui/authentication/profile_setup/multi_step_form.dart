@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_typing_uninitialized_variables
 
+import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
 import 'package:cool_stepper_reloaded/cool_stepper_reloaded.dart';
@@ -32,8 +33,7 @@ class MultiStepForm extends StatefulWidget {
 class _MultiStepFormState extends State<MultiStepForm> {
   final _formKey = GlobalKey<FormState>();
   CountryCode? countryCode;
-  static List<String> languageList = [''];
-  static List<String> levelList = [''];
+  static List<Map<String, dynamic>> languageList = [{}];
   static List<String> uploadList = [''];
 
   TextEditingController? _firstNameController;
@@ -88,7 +88,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
     _cityController =
         TextEditingController(text: prefs!.getString('city') ?? '');
     _counrtyController =
-        TextEditingController(text: prefs!.getString('city') ?? '');
+        TextEditingController(text: prefs!.getString('country') ?? '');
     _currentLocationController = TextEditingController(
         text: prefs!.getString('current_location_country') ?? '');
     _registrationDateController = TextEditingController(
@@ -117,8 +117,12 @@ class _MultiStepFormState extends State<MultiStepForm> {
         TextEditingController(text: prefs!.getString('middle_name') ?? '');
     _lastNameController =
         TextEditingController(text: prefs!.getString('last_name') ?? '');
-    _vendorTypeController =
-        TextEditingController(text: prefs!.getString('vendor_type') ?? '');
+    _vendorTypeController = TextEditingController(
+        text: prefs!.getString('vendor_type') == '1'
+            ? 'Individual Consultant'
+            : prefs!.getString('vendor_type') == '2'
+                ? 'Recuiter Consultant'
+                : 'Company');
   }
 
   @override
@@ -1457,11 +1461,12 @@ class _MultiStepFormState extends State<MultiStepForm> {
     final stepper = CoolStepper(
       hasRoundedCorner: false,
       showErrorSnackbar: true,
-      onCompleted: () {},
+      onCompleted: () {
+        print(languageList);
+      },
       contentPadding: const EdgeInsets.all(15),
       steps: steps,
       config: CoolStepperConfig(
-        backText: 'Back',
         nextButton: Padding(
           padding: const EdgeInsets.all(10.0),
           child: Card(
@@ -1471,10 +1476,11 @@ class _MultiStepFormState extends State<MultiStepForm> {
               child: Padding(
                 padding: EdgeInsets.all(10.0),
                 child: Center(
-                    child: Text(
-                  'Next',
-                  style: TextStyle(color: Colors.white),
-                )),
+                  child: Text(
+                    'Next',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
               ),
             ),
           ),
@@ -1488,10 +1494,11 @@ class _MultiStepFormState extends State<MultiStepForm> {
               child: Padding(
                 padding: EdgeInsets.all(10.0),
                 child: Center(
-                    child: Text(
-                  'Back',
-                  style: TextStyle(color: Colors.white),
-                )),
+                  child: Text(
+                    'Back',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
               ),
             ),
           ),
@@ -1505,10 +1512,11 @@ class _MultiStepFormState extends State<MultiStepForm> {
               child: Padding(
                 padding: EdgeInsets.all(10.0),
                 child: Center(
-                    child: Text(
-                  'Proceed',
-                  style: TextStyle(color: Colors.white),
-                )),
+                  child: Text(
+                    'Finish',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
               ),
             ),
           ),
@@ -1536,18 +1544,14 @@ class _MultiStepFormState extends State<MultiStepForm> {
   }
 
   List<Widget> getLanguages() {
-    List<Widget> friendsTextFields = [];
+    List<Widget> languageTextFields = [];
     for (int i = 0; i < languageList.length; i++) {
-      friendsTextFields.add(
+      languageTextFields.add(
         Material(
           child: Row(
             children: [
               Flexible(
-                flex: 2,
                 child: LanguagesFields(index: i),
-              ),
-              Flexible(
-                child: LevelFields(index: i),
               ),
               const SizedBox(
                 width: 16,
@@ -1561,14 +1565,14 @@ class _MultiStepFormState extends State<MultiStepForm> {
         ),
       );
     }
-    return friendsTextFields;
+    return languageTextFields;
   }
 
   Widget _addRemoveButton(bool add, int index) {
     return InkWell(
       onTap: () {
         if (add) {
-          languageList.insert(0, '');
+          languageList.insert(0, {});
         } else {
           languageList.removeAt(index);
         }
@@ -1650,166 +1654,160 @@ class LanguagesFields extends StatefulWidget {
 }
 
 class _LanguagesFieldsState extends State<LanguagesFields> {
-  String? languageController;
+  String? languageController, levelController;
 
   @override
   void initState() {
     super.initState();
     languageController = '';
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
-      languageController = _MultiStepFormState.languageList[widget.index];
-    });
-
-    return DropdownButtonFormField(
-      validator: (String? value) {
-        if (value!.isEmpty) {
-          return 'select language';
-        } else {
-          return null;
-        }
-      },
-      iconSize: 0.0,
-      items: const [
-        DropdownMenuItem(
-          child: Text('English'),
-          value: 'English',
-        ),
-        DropdownMenuItem(
-          child: Text('Spanish'),
-          value: 'Spanish',
-        ),
-        DropdownMenuItem(
-          child: Text('French'),
-          value: 'French',
-        ),
-        DropdownMenuItem(
-          child: Text('Italian'),
-          value: 'Italian',
-        ),
-        DropdownMenuItem(
-          child: Text('Russian'),
-          value: 'Russian',
-        ),
-      ],
-      onChanged: (v) =>
-          _MultiStepFormState.languageList[widget.index] = v.toString(),
-      decoration: InputDecoration(
-        border: InputBorder.none,
-        prefixIconConstraints:
-            const BoxConstraints(minHeight: 50, minWidth: 50),
-        prefixIcon: const Icon(Entypo.language),
-        label: RichText(
-          text: TextSpan(
-            children: [
-              TextSpan(
-                text: 'Language',
-                style: TextStyle(
-                  color: Colors.grey.shade700,
-                  fontSize: 16,
-                ),
-              ),
-              const TextSpan(
-                text: ' *',
-                style: TextStyle(
-                  color: Colors.red,
-                  fontFeatures: [
-                    FontFeature.enable('sups'),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class LevelFields extends StatefulWidget {
-  final int index;
-
-  const LevelFields({Key? key, required this.index}) : super(key: key);
-  @override
-  _LevelFieldsState createState() => _LevelFieldsState();
-}
-
-class _LevelFieldsState extends State<LevelFields> {
-  String? levelController;
-
-  @override
-  void initState() {
-    super.initState();
     levelController = '';
   }
 
   @override
   Widget build(BuildContext context) {
     WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
-      levelController = _MultiStepFormState.levelList[widget.index];
+      languageController =
+          _MultiStepFormState.languageList[widget.index]['language'];
+      levelController = _MultiStepFormState.languageList[widget.index]['level'];
     });
 
-    return DropdownButtonFormField(
-      iconSize: 0.0,
-      items: const [
-        DropdownMenuItem(
-          child: Text('Level 1'),
-          value: 'Level 1',
-        ),
-        DropdownMenuItem(
-          child: Text('Level 2'),
-          value: 'Level 2',
-        ),
-        DropdownMenuItem(
-          child: Text('Level 3'),
-          value: 'Level 3',
-        ),
-        DropdownMenuItem(
-          child: Text('Level 4'),
-          value: 'Level 4',
-        ),
-        DropdownMenuItem(
-          child: Text('Level 5'),
-          value: 'Level 5',
-        ),
-      ],
-      onChanged: (v) =>
-          _MultiStepFormState.levelList[widget.index] = v.toString(),
-      decoration: InputDecoration(
-        border: InputBorder.none,
-        label: RichText(
-          text: TextSpan(
-            children: [
-              TextSpan(
-                text: 'Level',
-                style: TextStyle(
-                  color: Colors.grey.shade700,
-                  fontSize: 16,
-                ),
+    return Row(
+      children: [
+        Flexible(
+          flex: 2,
+          child: DropdownButtonFormField(
+            validator: (String? value) {
+              if (value!.isEmpty) {
+                return 'select language';
+              } else {
+                return null;
+              }
+            },
+            iconSize: 0.0,
+            items: const [
+              DropdownMenuItem(
+                child: Text('English'),
+                value: 'English',
               ),
-              const TextSpan(
-                text: ' *',
-                style: TextStyle(
-                  color: Colors.red,
-                  fontFeatures: [
-                    FontFeature.enable('sups'),
+              DropdownMenuItem(
+                child: Text('Spanish'),
+                value: 'Spanish',
+              ),
+              DropdownMenuItem(
+                child: Text('French'),
+                value: 'French',
+              ),
+              DropdownMenuItem(
+                child: Text('Italian'),
+                value: 'Italian',
+              ),
+              DropdownMenuItem(
+                child: Text('Russian'),
+                value: 'Russian',
+              ),
+            ],
+            onChanged: (v) {
+              _MultiStepFormState.languageList[widget.index]['language'] =
+                  v.toString();
+              prefs?.setString('languages',
+                  jsonEncode(_MultiStepFormState.languageList[widget.index]));
+            },
+            decoration: InputDecoration(
+              border: InputBorder.none,
+              prefixIconConstraints:
+                  const BoxConstraints(minHeight: 50, minWidth: 50),
+              prefixIcon: const Icon(Entypo.language),
+              label: RichText(
+                text: TextSpan(
+                  children: [
+                    TextSpan(
+                      text: 'Language',
+                      style: TextStyle(
+                        color: Colors.grey.shade700,
+                        fontSize: 16,
+                      ),
+                    ),
+                    const TextSpan(
+                      text: ' *',
+                      style: TextStyle(
+                        color: Colors.red,
+                        fontFeatures: [
+                          FontFeature.enable('sups'),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ),
-            ],
+            ),
           ),
         ),
-      ),
-      validator: (String? value) {
-        if (value!.isEmpty) {
-          return 'select level';
-        } else {
-          return null;
-        }
-      },
+        Flexible(
+          child: DropdownButtonFormField(
+            iconSize: 0.0,
+            items: const [
+              DropdownMenuItem(
+                child: Text('Level 1'),
+                value: 'Level 1',
+              ),
+              DropdownMenuItem(
+                child: Text('Level 2'),
+                value: 'Level 2',
+              ),
+              DropdownMenuItem(
+                child: Text('Level 3'),
+                value: 'Level 3',
+              ),
+              DropdownMenuItem(
+                child: Text('Level 4'),
+                value: 'Level 4',
+              ),
+              DropdownMenuItem(
+                child: Text('Level 5'),
+                value: 'Level 5',
+              ),
+            ],
+            onChanged: (v) {
+              _MultiStepFormState.languageList[widget.index]['level'] =
+                  v.toString();
+              prefs?.setString('languages',
+                  jsonEncode(_MultiStepFormState.languageList[widget.index]));
+            },
+            decoration: InputDecoration(
+              border: InputBorder.none,
+              label: RichText(
+                text: TextSpan(
+                  children: [
+                    TextSpan(
+                      text: 'Level',
+                      style: TextStyle(
+                        color: Colors.grey.shade700,
+                        fontSize: 16,
+                      ),
+                    ),
+                    const TextSpan(
+                      text: ' *',
+                      style: TextStyle(
+                        color: Colors.red,
+                        fontFeatures: [
+                          FontFeature.enable('sups'),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            validator: (String? value) {
+              if (value!.isEmpty) {
+                return 'select level';
+              } else {
+                return null;
+              }
+            },
+          ),
+        ),
+      ],
     );
   }
 }
