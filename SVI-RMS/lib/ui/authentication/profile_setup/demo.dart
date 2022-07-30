@@ -18,11 +18,9 @@ class Demo extends StatefulWidget {
 
 class _DemoState extends State<Demo> {
   String? toolId;
-  final _expanded = false.obs;
 
-  List<Map<String, dynamic>>? checkList = [];
   final tableData = <DataRow>[].obs;
-  final isChecked = false.obs;
+  final isChecked = <bool>[].obs;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -53,8 +51,8 @@ class _DemoState extends State<Demo> {
   }
 
   Future<Widget> getTools() async {
-    List<Widget>? dropdownMenuItem = [];
-    List<ExpansionPanel>? checkList = [];
+    List<Widget>? checkList = [];
+    List<Widget>? tiles = [];
     try {
       await http
           .get(
@@ -65,51 +63,37 @@ class _DemoState extends State<Demo> {
           .then((parent) async {
         if (jsonDecode(parent.body)['code'] == 200) {
           var tools = jsonDecode(parent.body)['data']['tools'];
-          for (var parentItems in tools) {
-            try {
-              await http
-                  .get(
-                Uri.parse(
-                  "${baseURL}get_subtoolkits.php?auth_token=$authToken&id=${prefs?.getInt('user_id')}&parent_id=${parentItems['id']}",
-                ),
-              )
-                  .then((child) {
-                if (jsonDecode(child.body)['code'] == 200) {
-                  var tools = jsonDecode(child.body)['data'];
-                  dropdownMenuItem.add(
-                    ExpansionPanelList(
-                      animationDuration: const Duration(milliseconds: 2000),
-                      children: [
-                        ExpansionPanel(
-                          headerBuilder: (context, isExpanded) {
-                            return const ListTile(
-                              title: Text(
-                                'Click To Expand',
-                                style: TextStyle(color: Colors.black),
-                              ),
-                            );
-                          },
-                          body: const ListTile(
-                            title: Text('Description text',
-                                style: TextStyle(color: Colors.black)),
-                          ),
-                          isExpanded: _expanded.value,
-                          canTapOnHeader: true,
-                        ),
-                      ],
-                      dividerColor: Colors.grey,
-                      expansionCallback: (panelIndex, isExpanded) {
-                        _expanded.value = !_expanded.value;
+          for (var tool in tools) {
+            isChecked.value =
+                List<bool>.filled(tool['sub_tools'].length, false);
+            for (var i = 0; i < tool['sub_tools'].length; i++) {
+              checkList.add(
+                Obx(
+                   () {
+                    return CheckboxListTile(
+                      title: Text(tool['sub_tools'][i]['name']),
+                      value: isChecked[i],
+                      onChanged: (val) {
+                        isChecked[i] = val!;
+                        print(i.toString()+isChecked[i].toString());
                       },
-                    ),
-                  );
-                }
-              });
-            } catch (e) {
-              if (kDebugMode) {
-                print(e);
-              }
+                    );
+                  }
+                ),
+              );
             }
+            tiles.add(
+              ExpansionTile(
+                title: Text(tool['name']),
+                children: List.generate(
+                  checkList.length,
+                  (index) {
+                    return checkList[index];
+                  },
+                ),
+              ),
+            );
+            checkList.clear();
           }
         }
       });
@@ -120,9 +104,9 @@ class _DemoState extends State<Demo> {
     }
     return ListView.builder(
       shrinkWrap: true,
-      itemCount: dropdownMenuItem.length,
+      itemCount: tiles.length,
       itemBuilder: (context, index) {
-        return dropdownMenuItem[index];
+        return tiles[index];
       },
     );
   }
