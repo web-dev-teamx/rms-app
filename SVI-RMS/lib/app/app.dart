@@ -1,6 +1,7 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:sv_rms_mobile/services/client/http_client_provider.dart';
@@ -38,7 +39,7 @@ class _RmsAppState extends State<RmsApp> {
         ),
       ],
       child: Observer(
-        builder: (context) => MaterialApp(
+        builder: (context) => GetMaterialApp(
           title: 'TAL ESS',
           debugShowCheckedModeBanner: false,
           navigatorKey: navigatorKey,

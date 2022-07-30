@@ -68,6 +68,7 @@ dependencies:
   cool_stepper_reloaded: ^3.2.5
   multi_select_flutter: ^4.1.2
   flutter_local_notifications: ^9.5.3+1
+  get: ^4.6.1
   
   
 

@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import 'package:http/http.dart' as http;
 import 'package:sv_rms_mobile/main.dart';
@@ -17,53 +18,43 @@ class Demo extends StatefulWidget {
 
 class _DemoState extends State<Demo> {
   String? toolId;
+  final _expanded = false.obs;
 
+  List<Map<String, dynamic>>? checkList = [];
+  final tableData = <DataRow>[].obs;
+  final isChecked = false.obs;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Column(
-          children: [
-            FutureBuilder<Widget>(
-              future: getTools(),
-              builder: (context, snapshot) {
-                return snapshot.connectionState == ConnectionState.waiting
-                    ? const Center(
-                        child: CircularProgressIndicator(),
-                      )
-                    : snapshot.hasData
-                        ? SizedBox(child: snapshot.data)
-                        : const Center(
-                            child: Text(
-                              'No Record Found',
-                            ),
-                          );
-              },
-            ),
-            FutureBuilder<Widget>(
-              future: getSubtools(),
-              builder: (context, snapshot) {
-                return snapshot.connectionState == ConnectionState.waiting
-                    ? const Center(
-                        child: CircularProgressIndicator(),
-                      )
-                    : snapshot.hasData
-                        ? SizedBox(child: snapshot.data)
-                        : const Center(
-                            child: Text(
-                              'No Record Found',
-                            ),
-                          );
-              },
-            ),
-          ],
+        child: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
+          child: Column(
+            children: [
+              FutureBuilder<Widget>(
+                future: getTools(),
+                builder: (context, snapshot) {
+                  return snapshot.connectionState == ConnectionState.waiting
+                      ? const Center()
+                      : snapshot.hasData
+                          ? SizedBox(child: snapshot.data)
+                          : const Center(
+                              child: Text(
+                                'No Record Found',
+                              ),
+                            );
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
   Future<Widget> getTools() async {
-    List<DropdownMenuItem>? dropdownMenuItem = [];
+    List<Widget>? dropdownMenuItem = [];
+    List<ExpansionPanel>? checkList = [];
     try {
       await http
           .get(
@@ -71,61 +62,54 @@ class _DemoState extends State<Demo> {
           "${baseURL}get_profile_other.php?auth_token=$authToken&id=${prefs?.getInt('user_id')}",
         ),
       )
-          .then((response) {
-        if (jsonDecode(response.body)['code'] == 200) {
-          var tools = jsonDecode(response.body)['data']['tools'];
-          for (var item in tools) {
-            dropdownMenuItem.add(
-              DropdownMenuItem(
-                child: Text(item['name']),
-                value: item['id'],
-              ),
-            );
-          }
-        }
-      });
-    } catch (e) {
-      if (kDebugMode) {
-        print(e);
-      }
-    }
-    return DropdownButtonFormField<dynamic>(
-      items: dropdownMenuItem,
-      onChanged: (value) {
-        setState(() {
-          toolId = value;
-        });
-      },
-    );
-  }
-
-  Future<Widget> getSubtools() async {
-    List<Widget>? checkList = [];
-    bool isChecked = false;
-    try {
-      await http
-          .get(
-        Uri.parse(
-          "${baseURL}get_subtoolkits.php?auth_token=$authToken&id=${prefs?.getInt('user_id')}&parent_id=$toolId",
-        ),
-      )
-          .then((response) {
-        if (jsonDecode(response.body)['code'] == 200) {
-          var tools = jsonDecode(response.body)['data'];
-          for (var item in tools) {
-            checkList.add(
-              CheckboxListTile(
-                value: isChecked,
-                dense: true,
-                controlAffinity: ListTileControlAffinity.leading,
-                onChanged: (value) {
-                 
-                },
-                title: Text(
-                  item['name'],
+          .then((parent) async {
+        if (jsonDecode(parent.body)['code'] == 200) {
+          var tools = jsonDecode(parent.body)['data']['tools'];
+          for (var parentItems in tools) {
+            try {
+              await http
+                  .get(
+                Uri.parse(
+                  "${baseURL}get_subtoolkits.php?auth_token=$authToken&id=${prefs?.getInt('user_id')}&parent_id=${parentItems['id']}",
                 ),
-              ),
-            );
+              )
+                  .then((child) {
+                if (jsonDecode(child.body)['code'] == 200) {
+                  var tools = jsonDecode(child.body)['data'];
+                  dropdownMenuItem.add(
+                    ExpansionPanelList(
+                      animationDuration: const Duration(milliseconds: 2000),
+                      children: [
+                        ExpansionPanel(
+                          headerBuilder: (context, isExpanded) {
+                            return const ListTile(
+                              title: Text(
+                                'Click To Expand',
+                                style: TextStyle(color: Colors.black),
+                              ),
+                            );
+                          },
+                          body: const ListTile(
+                            title: Text('Description text',
+                                style: TextStyle(color: Colors.black)),
+                          ),
+                          isExpanded: _expanded.value,
+                          canTapOnHeader: true,
+                        ),
+                      ],
+                      dividerColor: Colors.grey,
+                      expansionCallback: (panelIndex, isExpanded) {
+                        _expanded.value = !_expanded.value;
+                      },
+                    ),
+                  );
+                }
+              });
+            } catch (e) {
+              if (kDebugMode) {
+                print(e);
+              }
+            }
           }
         }
       });
@@ -136,10 +120,10 @@ class _DemoState extends State<Demo> {
     }
     return ListView.builder(
       shrinkWrap: true,
-      itemCount: checkList.length,
-      itemBuilder: ((context, index) {
-        return checkList[index];
-      }),
+      itemCount: dropdownMenuItem.length,
+      itemBuilder: (context, index) {
+        return dropdownMenuItem[index];
+      },
     );
   }
 }
