@@ -5,7 +5,9 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:sv_rms_mobile/services/client/http_client_provider.dart';
+import 'package:sv_rms_mobile/ui/authentication/login_screen.dart';
 import 'package:sv_rms_mobile/ui/authentication/profile_setup/demo.dart';
+import 'package:sv_rms_mobile/ui/splash_screen/splash_screen.dart';
 import 'package:sv_rms_mobile/utils/app_theme.dart';
 
 import 'config_store.dart';
